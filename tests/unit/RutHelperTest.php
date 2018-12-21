@@ -107,6 +107,9 @@ class RutHelperTest extends TestCase
         foreach ($this->invalidRuts as $rut) {
             $this->assertFalse(RutHelper::validate($rut));
         }
+
+        $this->assertFalse(RutHelper::validate('asdasdasd'));
+
     }
 
     public function testValidateOnMalformedRut()
@@ -132,14 +135,40 @@ class RutHelperTest extends TestCase
         }
     }
 
+    public function testValidateStrict()
+    {
+        $ruts = [
+            '8.495.461-6',
+            '24.700.909-4',
+            '5.868.566-6',
+            '13.666.578-2',
+            '22.605.071-k',
+            '14.379.170-K',
+        ];
+
+        $this->assertTrue(RutHelper::validateStrict($ruts));
+
+        foreach ($ruts as $rut) {
+            $this->assertTrue(RutHelper::validateStrict($rut));
+        }
+    }
+
+    public function testDoesntValidateStrict()
+    {
+        foreach ($this->ruts as $rut) {
+            $this->assertFalse(RutHelper::validateStrict($rut));
+        }
+
+    }
+
     public function testAreEqual()
     {
-        $this->assertTrue(RutHelper::areEqual(247009094, '2470!!!###0909-4'));
+        $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4'));
     }
 
     public function testAreNotEqual()
     {
-        $this->assertFalse(RutHelper::areEqual(247009091, '2470!!!###0909-4'));
+        $this->assertFalse(RutHelper::isEqual(247009091, '2470!!!###0909-4'));
     }
 
     public function testFilter()

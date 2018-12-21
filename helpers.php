@@ -1,16 +1,16 @@
 <?php
 
 if (!function_exists('is_rut')) {
-    function is_rut(string $rut)
+    function is_rut(...$rut)
     {
-        return \DarkGhostHunter\RutUtils\RutHelper::validate($rut);
+        return \DarkGhostHunter\RutUtils\RutHelper::validate(...$rut);
     }
 }
 
-if (!function_exists('rut_are_equal')) {
-    function is_equal_rut(string $rutA, string $rutB)
+if (!function_exists('is_rut_equal')) {
+    function is_rut_equal(string $rutA, string $rutB)
     {
-        return \DarkGhostHunter\RutUtils\RutHelper::areEqual($rutA, $rutB);
+        return \DarkGhostHunter\RutUtils\RutHelper::isEqual($rutA, $rutB);
     }
 }
 

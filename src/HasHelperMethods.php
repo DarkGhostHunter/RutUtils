@@ -20,7 +20,6 @@ trait HasHelperMethods
      * Returns if the present RUT is valid
      *
      * @return bool
-     * @throws Exceptions\InvalidRutException
      */
     public function isValid()
     {
@@ -58,6 +57,6 @@ trait HasHelperMethods
      */
     public function isEqualTo(string $rut)
     {
-        return RutHelper::areEqual($this, $rut);
+        return RutHelper::isEqual($this, $rut);
     }
 }

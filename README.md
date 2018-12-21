@@ -246,7 +246,7 @@ namespace App;
 
 use DarkGhostHunter\RutUtils\Rut;
 
-// Receive the raw string, an validate it
+// Receive the raw string, and validate it
 echo Rut::validate('14328145-0'); // true
 echo Rut::validate('14.328.145-0', '12343580-K'); // true
 echo Rut::validate(143281450); // true
@@ -270,6 +270,25 @@ echo Rut::make('cleanthis14328145-0-deletethis')->isValid(); // true
 ```
 
 You can use this to check if the user has responded with a valid RUT, and process the Request if it is.
+
+#### Strict validation
+
+You can strictly validate a RUT. The RUT being passed must have the Number with thousand separator and hyphen preceding the Verification Digit. 
+
+```php
+<?php
+
+namespace App;
+
+use DarkGhostHunter\RutUtils\Rut;
+
+// Receive the raw string, and strictly validate it
+echo Rut::validateStrict('14328145-0'); // false
+echo Rut::validateStrict('14.328.145-0', '12343580-K'); // false
+echo Rut::validateStrict(143281450); // false
+echo Rut::validateStrict('not-a-rut'); // false
+echo Rut::validateStrict(143281450, 'not-a-rut'); // false
+```
 
 ### Filter valid RUTs
 
@@ -332,7 +351,7 @@ You can use this for comparing the user input with the one in the database or ot
 
 ### Rectify (from a RUT Number)
 
-You may have a RUT without Verification Digit, or you may need the correct one from a whole RUT. In any case, you can use `rectify()` and pass down only the **RUT Number**, and in return you will a valid Rut. 
+You may have a RUT without Verification Digit, or you may need the correct one from a whole RUT. In any case, you can use `rectify()` and pass down only the **RUT Number**, in return you will get valid Rut. 
 
 ```php
 <?php
@@ -369,7 +388,7 @@ echo Rut::isPerson('14328145-0'); // true
 echo Rut::isCompany('14328145-0'); // false
 ```
 
-What this does is basically return if the RUT is between 1.000.000 and 50.000.000 for normal people, and between 50.000.001 and 100.000.000 for companies, as it *usually* are registered.
+What this does is basically return if the RUT is between 1.000.000 and 50.000.000 for normal people, and between 50.000.001 and 100.000.000 for companies, as *usually* are registered.
 
 ### Global helper functions
 
@@ -380,7 +399,7 @@ For convenience, this package includes a set of globally accessible functions.
 | is_rut() | RutHelper::validate()
 | is_rut_person() | RutHelper::isPerson()
 | is_rut_company() | RutHelper::isCompany() 
-| rut_are_equal() | RutHelper::areEqual()
+| is_rut_equal() | RutHelper::areEqual()
 | rut_filter() | RutHelper::filter()
 | rut_rectify() | RutHelper::rectify()
 

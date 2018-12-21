@@ -53,6 +53,7 @@ class RutBuilder
      * @param int $iterations
      * @param bool $unwrapSingle
      * @return array
+     * @throws Exceptions\InvalidRutException
      */
     public function generate(int $iterations = 1, bool $unwrapSingle = true)
     {
@@ -74,6 +75,7 @@ class RutBuilder
      *
      * @param int $iterations
      * @return array
+     * @throws Exceptions\InvalidRutException
      */
     protected function performGenerate(int $iterations)
     {
@@ -118,6 +120,7 @@ class RutBuilder
      * @param int $min
      * @param int $max
      * @return array
+     * @throws Exceptions\InvalidRutException
      */
     protected function generateObjects(int $iterations, int $min, int $max)
     {
@@ -174,6 +177,7 @@ class RutBuilder
      *
      * @param array $array
      * @return array
+     * @throws Exceptions\InvalidRutException
      */
     protected function fillNonUniqueIterations(array &$array)
     {
