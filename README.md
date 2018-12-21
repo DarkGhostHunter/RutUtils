@@ -29,7 +29,7 @@ Just fire Composer and require it into your project:
 composer require darkghosthunter/rut-utils
 ```
 
-If you don't have Composer in your project, ~~you should be ashamed~~ you can download this package as a zip an require the `load.php` in the root folder into your project.
+If you don't have Composer in your project, ~~you should be ashamed~~ you can download this package as a zip and require the `load.php` in the root folder into your project.
 
 ## Table of Contents
 
