@@ -7,7 +7,7 @@ if (!function_exists('is_rut')) {
     }
 }
 
-if (!function_exists('is_equal_rut')) {
+if (!function_exists('rut_are_equal')) {
     function is_equal_rut(string $rutA, string $rutB)
     {
         return \DarkGhostHunter\RutUtils\RutHelper::areEqual($rutA, $rutB);

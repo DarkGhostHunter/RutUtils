@@ -45,6 +45,7 @@ If you don't have Composer in your project, ~~you should be ashamed~~ you can do
 - [Compare RUT if is equal](#compare-rut-if-is-equal)
 - [Rectify (from a RUT Number)](#rectify-from-a-rut-number)
 - [Is person or company?](#is-person-or-company)
+- [Global helper functions](#global-helpers-functions)
 
 ## Usage
 
@@ -370,6 +371,20 @@ echo Rut::isCompany('14328145-0'); // false
 
 What this does is basically return if the RUT is between 1.000.000 and 50.000.000 for normal people, and between 50.000.001 and 100.000.000 for companies, as it *usually* are registered.
 
+### Global helper functions
+
+For convenience, this package includes a set of globally accessible functions.
+
+| Function | Alias for
+|---|---
+| is_rut() | RutHelper::validate()
+| is_rut_person() | RutHelper::isPerson()
+| is_rut_company() | RutHelper::isCompany() 
+| rut_are_equal() | RutHelper::areEqual()
+| rut_filter() | RutHelper::filter()
+| rut_rectify() | RutHelper::rectify()
+
 ## License
 
 This package is licenced by the [MIT License](LICENSE).
+
