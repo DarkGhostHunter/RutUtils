@@ -246,7 +246,7 @@ namespace App;
 
 use DarkGhostHunter\RutUtils\Rut;
 
-// Receive the raw string, an validate it
+// Receive the raw string, and validate it
 echo Rut::validate('14328145-0'); // true
 echo Rut::validate('14.328.145-0', '12343580-K'); // true
 echo Rut::validate(143281450); // true
@@ -270,6 +270,25 @@ echo Rut::make('cleanthis14328145-0-deletethis')->isValid(); // true
 ```
 
 You can use this to check if the user has responded with a valid RUT, and process the Request if it is.
+
+#### Strict validation
+
+You can strictly validate a RUT. The RUT being passed must have the Number with thousand separator and hyphen preceding the Verification Digit. 
+
+```php
+<?php
+
+namespace App;
+
+use DarkGhostHunter\RutUtils\Rut;
+
+// Receive the raw string, and strictly validate it
+echo Rut::validateStrict('14328145-0'); // false
+echo Rut::validateStrict('14.328.145-0', '12343580-K'); // false
+echo Rut::validateStrict(143281450); // false
+echo Rut::validateStrict('not-a-rut'); // false
+echo Rut::validateStrict(143281450, 'not-a-rut'); // false
+```
 
 ### Filter valid RUTs
 

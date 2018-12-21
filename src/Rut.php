@@ -16,6 +16,7 @@ use JsonSerializable;
  * @property-read string|int $vd
  *
  * @method static bool validate(...$ruts)
+ * @method static bool validateStrict(...$ruts)
  * @method static bool areEqual(string $rutA, string $rutB)
  * @method static array filter(...$ruts)
  * @method static Rut rectify(int $num)
