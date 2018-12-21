@@ -388,7 +388,7 @@ echo Rut::isPerson('14328145-0'); // true
 echo Rut::isCompany('14328145-0'); // false
 ```
 
-What this does is basically return if the RUT is between 1.000.000 and 50.000.000 for normal people, and between 50.000.001 and 100.000.000 for companies, as it *usually* are registered.
+What this does is basically return if the RUT is between 1.000.000 and 50.000.000 for normal people, and between 50.000.001 and 100.000.000 for companies, as *usually* are registered.
 
 ### Global helper functions
 

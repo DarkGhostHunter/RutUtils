@@ -1,9 +1,9 @@
 <?php
 
 if (!function_exists('is_rut')) {
-    function is_rut(string $rut)
+    function is_rut(...$rut)
     {
-        return \DarkGhostHunter\RutUtils\RutHelper::validate($rut);
+        return \DarkGhostHunter\RutUtils\RutHelper::validate(...$rut);
     }
 }
 
