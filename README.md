@@ -397,6 +397,7 @@ For convenience, this package includes a set of globally accessible functions.
 | Function | Alias for
 |---|---
 | is_rut() | RutHelper::validate()
+| is_rut_strict() | RutHelper::validateStrict()
 | is_rut_person() | RutHelper::isPerson()
 | is_rut_company() | RutHelper::isCompany() 
 | is_rut_equal() | RutHelper::areEqual()
