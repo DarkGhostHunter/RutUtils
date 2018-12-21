@@ -52,7 +52,7 @@ class RutBuilder
      *
      * @param int $iterations
      * @param bool $unwrapSingle
-     * @return array
+     * @return array|Rut
      * @throws Exceptions\InvalidRutException
      */
     public function generate(int $iterations = 1, bool $unwrapSingle = true)

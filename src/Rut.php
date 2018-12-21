@@ -94,7 +94,7 @@ class Rut implements ArrayAccess, JsonSerializable
      * Makes only Valid Ruts
      *
      * @param mixed ...$ruts
-     * @return array
+     * @return Rut|array
      * @throws InvalidRutException
      */
     public static function makeValid(...$ruts)
