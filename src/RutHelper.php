@@ -65,7 +65,6 @@ class RutHelper
      *
      * @param array $ruts
      * @return bool
-     * @throws InvalidRutException
      */
     public static function validate(...$ruts)
     {
@@ -74,7 +73,11 @@ class RutHelper
         }
 
         foreach ($ruts as $rut) {
-            list ($num, $vd) = self::separateRut($rut);
+            try {
+                list ($num, $vd) = self::separateRut($rut);
+            } catch (InvalidRutException $exception) {
+                return false;
+            }
 
             if ($vd != self::getVd($num)) {
                 return false;

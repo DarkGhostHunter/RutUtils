@@ -20,7 +20,6 @@ trait HasHelperMethods
      * Returns if the present RUT is valid
      *
      * @return bool
-     * @throws Exceptions\InvalidRutException
      */
     public function isValid()
     {

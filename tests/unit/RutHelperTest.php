@@ -107,6 +107,9 @@ class RutHelperTest extends TestCase
         foreach ($this->invalidRuts as $rut) {
             $this->assertFalse(RutHelper::validate($rut));
         }
+
+        $this->assertFalse(RutHelper::validate('asdasdasd'));
+
     }
 
     public function testValidateOnMalformedRut()
