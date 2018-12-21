@@ -351,7 +351,7 @@ You can use this for comparing the user input with the one in the database or ot
 
 ### Rectify (from a RUT Number)
 
-You may have a RUT without Verification Digit, or you may need the correct one from a whole RUT. In any case, you can use `rectify()` and pass down only the **RUT Number**, and in return you will a valid Rut. 
+You may have a RUT without Verification Digit, or you may need the correct one from a whole RUT. In any case, you can use `rectify()` and pass down only the **RUT Number**, in return you will get valid Rut. 
 
 ```php
 <?php
