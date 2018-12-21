@@ -5,7 +5,6 @@ namespace DarkGhostHunter\RutUtils;
 use ArrayAccess;
 use BadMethodCallException;
 use DarkGhostHunter\RutUtils\Exceptions\InvalidRutException;
-use Error;
 use JsonSerializable;
 
 /**
@@ -34,6 +33,8 @@ use JsonSerializable;
  */
 class Rut implements ArrayAccess, JsonSerializable
 {
+    use HasHelperMethods;
+
     /**
      * If `K` should be treated as uppercase.
      *
@@ -142,63 +143,6 @@ class Rut implements ArrayAccess, JsonSerializable
     public static function allLowercase()
     {
         self::$uppercase = false;
-    }
-
-    /**
-     * Separate a RUT string into
-     *
-     * @param string $rut
-     * @return array
-     * @throws InvalidRutException
-     */
-    protected function separateRut(string $rut)
-    {
-        return RutHelper::separateRut($rut, self::$uppercase);
-    }
-
-    /**
-     * Returns if the present RUT is valid
-     *
-     * @return bool
-     * @throws InvalidRutException
-     */
-    public function isValid()
-    {
-        return RutHelper::validate($this);
-    }
-
-    /**
-     * Return if the RUT is for a Person
-     *
-     * @return bool
-     * @throws InvalidRutException
-     */
-    public function person()
-    {
-        return RutHelper::isPerson($this);
-    }
-
-    /**
-     * Return if the RUT is for a Company
-     *
-     * @return bool
-     * @throws InvalidRutException
-     */
-    public function company()
-    {
-        return !$this->person();
-    }
-
-    /**
-     * Return if the RUT is equal to another RUT
-     *
-     * @param string $rut
-     * @return bool
-     * @throws InvalidRutException
-     */
-    public function isEqualTo(string $rut)
-    {
-        return RutHelper::areEqual($this, $rut);
     }
 
     /**
