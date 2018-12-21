@@ -15,16 +15,6 @@ This package allows you to:
 
 While this package works as a fire-and-forget utility for your project, ensure you read the documentation.
 
-## What are RUTs (or RUNs)?
-
-A RUT (or RUN for people) is a string of numbers which identify a person or company. They're are unique for each one, and they're never re-assigned, so the registry of RUTs is always growing upwards.
-
-The RUT its comprised of a random Number, like `12.345.678`, and a Verification Digit, which is the result of a mathematical algorithm [(Modulo 11)](https://www.google.com/search?q=modulo+11+algorithm) over that number. This Verification Digit vary between `0` and `9`, or a `K`.
-
-This information identifying the person is usually a safe bet for chilean companies. It allows to attach one account to one person (or company), and can be cross-referenced with other data the user may have available through other services.
-
-> What's the difference between RUTs and RUNs? RUT are meant for identifying a person or company taxes, RUNs are to identify persons. But in any case, they're practically the same.
-
 ## Requirements
 
 This package only needs PHP 7.1 and over.
@@ -43,6 +33,7 @@ If you don't have Composer in your project, ~~you should be ashamed~~ you can do
 
 ## Table of Contents
 
+- [What is a RUT or RUN](#what-is-a-rut-or-run)
 - [Creating a RUT](#creating-a-rut)
 - [Creating multiple RUTs](#creating-multiple-ruts)
 - [RUT as string, object or array](#rut-as-string-object-or-array)
@@ -56,6 +47,16 @@ If you don't have Composer in your project, ~~you should be ashamed~~ you can do
 - [Is person or company?](#is-person-or-company)
 
 ## Usage
+
+### What is a RUT or RUN?
+
+A RUT (or RUN for people) is a string of numbers which identify a person or company. They're are unique for each one, and they're never re-assigned, so the registry of RUTs is always growing upwards.
+
+The RUT its comprised of a random Number, like `12.345.678`, and a Verification Digit, which is the result of a mathematical algorithm [(Modulo 11)](https://www.google.com/search?q=modulo+11+algorithm) over that number. This Verification Digit vary between `0` and `9`, or a `K`.
+
+This information identifying the person is usually a safe bet for chilean companies. It allows to attach one account to one person (or company), and can be cross-referenced with other data the user may have available through other services.
+
+> What's the difference between RUTs and RUNs? RUT are meant for identifying a person or company taxes, RUNs are to identify persons. But in any case, they're practically the same.
 
 ### Creating a RUT
 
