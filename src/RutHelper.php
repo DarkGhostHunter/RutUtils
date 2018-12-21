@@ -61,7 +61,7 @@ class RutHelper
     }
 
     /**
-     * Returns if the RUT is valid
+     * Returns if a RUT or an array of RUTs are valid
      *
      * @param array $ruts
      * @return bool
@@ -72,16 +72,77 @@ class RutHelper
             $ruts = $ruts[0];
         }
 
+        return self::performValidate($ruts);
+    }
+
+    /**
+     * Returns if a RUT or an array of RUTs are strictly valid
+     *
+     * @param mixed ...$ruts
+     * @return bool
+     */
+    public static function validateStrict(...$ruts)
+    {
+        if (is_array($ruts[0]) && func_num_args() === 1) {
+            $ruts = $ruts[0];
+        }
+
+        return self::performValidateStrict($ruts);
+    }
+
+    /**
+     * Performs the lazy validation of the RUTs
+     *
+     * @param array $ruts
+     * @return bool
+     */
+    protected static function performValidate(array $ruts)
+    {
         foreach ($ruts as $rut) {
-            try {
-                list ($num, $vd) = self::separateRut($rut);
-            } catch (InvalidRutException $exception) {
+            if (!self::validateRut($rut)) {
+                return false;
+            };
+        }
+        return true;
+    }
+
+    /**
+     * Performs the strict validation of the RUTs
+     *
+     * @param array $ruts
+     * @return bool
+     */
+    protected static function performValidateStrict(array $ruts)
+    {
+        foreach ($ruts as $rut) {
+
+            if (!preg_match('/(\d){1,2}.\d{3}.\d{3}\-[\dkK]/', $rut)) {
                 return false;
             }
 
-            if ($vd != self::getVd($num)) {
+            if (!self::validateRut($rut)) {
                 return false;
-            }
+            };
+        }
+        return true;
+    }
+
+    /**
+     * Validates a RUT
+     *
+     * @param string $rut
+     * @return bool
+     */
+    protected static function validateRut(string $rut)
+    {
+        try {
+            list ($num, $vd) = self::separateRut($rut);
+        } catch (InvalidRutException $exception) {
+            return false;
+        }
+
+        if ($vd != self::getVd($num)) {
+            return false;
         }
 
         return true;
