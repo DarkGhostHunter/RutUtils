@@ -95,7 +95,7 @@ class RutHelper
      * @return bool
      * @throws InvalidRutException
      */
-    public static function areEqual(string $rutA, string $rutB)
+    public static function isEqual(string $rutA, string $rutB)
     {
         return self::cleanRut($rutA) === self::cleanRut($rutB);
     }

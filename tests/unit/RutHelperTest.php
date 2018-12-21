@@ -137,12 +137,12 @@ class RutHelperTest extends TestCase
 
     public function testAreEqual()
     {
-        $this->assertTrue(RutHelper::areEqual(247009094, '2470!!!###0909-4'));
+        $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4'));
     }
 
     public function testAreNotEqual()
     {
-        $this->assertFalse(RutHelper::areEqual(247009091, '2470!!!###0909-4'));
+        $this->assertFalse(RutHelper::isEqual(247009091, '2470!!!###0909-4'));
     }
 
     public function testFilter()

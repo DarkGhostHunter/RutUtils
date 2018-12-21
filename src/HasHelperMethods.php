@@ -57,6 +57,6 @@ trait HasHelperMethods
      */
     public function isEqualTo(string $rut)
     {
-        return RutHelper::areEqual($this, $rut);
+        return RutHelper::isEqual($this, $rut);
     }
 }

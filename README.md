@@ -380,7 +380,7 @@ For convenience, this package includes a set of globally accessible functions.
 | is_rut() | RutHelper::validate()
 | is_rut_person() | RutHelper::isPerson()
 | is_rut_company() | RutHelper::isCompany() 
-| rut_are_equal() | RutHelper::areEqual()
+| is_rut_equal() | RutHelper::areEqual()
 | rut_filter() | RutHelper::filter()
 | rut_rectify() | RutHelper::rectify()
 
