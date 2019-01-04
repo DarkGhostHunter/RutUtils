@@ -287,4 +287,59 @@ class RutTest extends TestCase
         $this->assertArrayHasKey('num', $array);
         $this->assertArrayHasKey('vd', $array);
     }
+
+    public function testToJson()
+    {
+        $rut = new Rut('66123136K');
+
+        $this->assertJson($rut->toJson());
+        $this->assertEquals(66123136, json_decode($rut->toJson())->num);
+        $this->assertEquals('K', json_decode($rut->toJson())->vd);
+    }
+
+    public function testGetStringFormat()
+    {
+        $this->assertEquals('full', Rut::getStringFormat());
+
+        Rut::setStringFormat('basic');
+
+        $this->assertEquals('basic', Rut::getStringFormat());
+
+        Rut::setStringFormat('raw');
+
+        $this->assertEquals('raw', Rut::getStringFormat());
+
+        Rut::setStringFormat('full');
+
+        $this->assertEquals('full', Rut::getStringFormat());
+
+        Rut::setStringFormat('basic');
+        Rut::setStringFormat('anythingWillDefaultToFull');
+
+        $this->assertEquals('full', Rut::getStringFormat());
+    }
+
+    public function testSetStringFormat()
+    {
+        $rut = new Rut('66123136K');
+
+        $this->assertEquals('66.123.136-K', (string)$rut);
+
+        Rut::setStringFormat('basic');
+
+        $this->assertEquals('66123136-K', (string)$rut);
+
+        Rut::setStringFormat('raw');
+
+        $this->assertEquals('66123136K', (string)$rut);
+
+        Rut::setStringFormat('full');
+
+        $this->assertEquals('66.123.136-K', (string)$rut);
+
+        Rut::setStringFormat('basic');
+        Rut::setStringFormat('anythingWillDefaultToFull');
+
+        $this->assertEquals('66.123.136-K', (string)$rut);
+    }
 }

@@ -33,19 +33,19 @@ If you don't have Composer in your project, ~~you should be ashamed~~ you can do
 
 ## Table of Contents
 
-- [What is a RUT or RUN](#what-is-a-rut-or-run)
+- [What is a RUT or RUN?](#what-is-a-rut-or-run)
 - [Creating a RUT](#creating-a-rut)
-- [Creating multiple RUTs](#creating-multiple-ruts)
-- [RUT as string, object or array](#rut-as-string-object-or-array)
-- [Lowercase or Uppercase `K`](#lowercase-or-uppercase-k)
-- [Generating a RUT](#generating-a-rut)
-- [Generating multiple unique RUTs](#generating-multiple-unique-ruts)
+  - [Creating multiple RUTs](#creating-multiple-ruts)
+- [Retrieving the RUT](#retrieving-a-rut)
+  - [Lowercase or Uppercase `K`](#lowercase-or-uppercase-k)
+- [Generating random RUTs](#generating-random-ruts)
+  - [Generating random unique RUTs](#generating-random-unique-ruts)
 - [Validating RUT](#validating-rut)
-- [Filter valid RUTs](#filter-valid-ruts)
-- [Compare RUT if is equal](#compare-rut-if-is-equal)
+- [Filter RUTs](#filter-ruts)
+- [Compare RUT](#compare-rut-if-is-equal)
 - [Rectify (from a RUT Number)](#rectify-from-a-rut-number)
-- [Is person or company?](#is-person-or-company)
-- [Global helper functions](#global-helpers-functions)
+- [Check RUT person or company](#check-rut-person-or-company)
+- [Global helper functions](#global-helper-functions)
 
 ## Usage
 
@@ -85,7 +85,7 @@ $rutC = new Rut('asdwdasd14.32.814.5-0');
 
 This object won't validate the RUT. Don't worry, we will see the Builder in a minute.
 
-### Creating multiple RUTs
+#### Creating multiple RUTs
 
 Sometimes is cumbersome to do a `foreach` or a `for` loop to make RUTs. Instead, use the `make()` static method to create multiple RUTs as an array
 
@@ -109,7 +109,7 @@ $rutsB = Rut::make([
 ]);
 ```
 
-### RUT as string, object or array
+### Retrieving a RUT
 
 Since there is no way to know how your application works with RUTs, you can treat the `Rut` object as an array, object or string for your convenience.
 
@@ -137,7 +137,7 @@ echo $rut->vd; // 0
 
 If you need to set a Number or Verification Digit, use `setNum()` and `setVd()`, respectively.
 
-### Lowercase or Uppercase `K`
+#### Lowercase or Uppercase `K`
 
 A RUT can have the `K` character as verification *digit*. The `Rut` object doesn't discerns between lowercase `k` or uppercase `K` when creating one, but **it always stores uppercase as default**.
 
@@ -163,7 +163,7 @@ This may come in handy when your source of truth manages lowercase `k`.
 
 > Ensure you set this before making RUTs, as the object will parse the RUT on input, not on output. 
 
-### Generating a RUT
+### Generating random RUTs
 
 Sometimes is handy to create RUT on the fly -usually for testing purposes.
 
@@ -218,7 +218,7 @@ $peopleRuts = Rut::asPerson()->asRaw()->generate(10);
 $companyRuts = Rut::asCompany()->asRaw()->generate(35);
 ```
 
-### Generating multiple unique RUTs
+#### Generating random unique RUTs
 
 If you need to create millions of RUTs without the risk of having them repeated, use these methods with `unique()`.
 
@@ -290,7 +290,7 @@ echo Rut::validateStrict('not-a-rut'); // false
 echo Rut::validateStrict(143281450, 'not-a-rut'); // false
 ```
 
-### Filter valid RUTs
+### Filter RUTs
 
 If you get more than one RUT, you can filter only the valid ones using `filter()`, which will take multiple RUTs and return an array comprised of only the valid ones.
 
@@ -368,7 +368,7 @@ echo $rut; // 12.343.580-0
 
 > If you pass down a whole RUT, you may get a new RUT with other Verification Digit. Ensure you pass down only the RUT Number. 
 
-### Is person or company?
+### Check RUT person or company
 
 While there is no formal way to know if a particular RUT is for a normal Person or a Company, you can guess is using `isPerson()` or `isCompany()` methods.
 
@@ -404,7 +404,52 @@ For convenience, this package includes a set of globally accessible functions.
 | rut_filter() | RutHelper::filter()
 | rut_rectify() | RutHelper::rectify()
 
+### Serialization
+
+RUT are JSON and array serialized with the `num` and `vd` separated, like so:
+
+```php
+<?php
+
+namespace App;
+
+use DarkGhostHunter\RutUtils\Rut;
+
+$rut = Rut::make('22605071-k');
+
+echo json_encode($rut); // {"num":"22605071","vd":"K"}
+print_r($rut->toArray()); // ['num' => 22605071, 'vd' => 'K']
+``` 
+
+You can serialize the RUT as a string. Here you have flexibility to use one of the formatting methods:
+
+* `full`: Default option. Serializes with thousand separator.
+* `basic`: No thousand separator, only the hyphen.
+* `raw`: No thousand separator nor hyphen.
+
+
+```php
+<?php
+
+namespace App;
+
+use DarkGhostHunter\RutUtils\Rut;
+
+$rut = Rut::make('22605071-k');
+
+Rut::setStringFormat('full'); 
+
+echo (string)$rut; // "22.605.071-K"
+
+Rut::setStringFormat('basic'); 
+
+echo (string)$rut; // "22605071-K"
+
+Rut::setStringFormat('raw'); 
+
+echo (string)$rut; // "22605071K"
+``` 
+
 ## License
 
 This package is licenced by the [MIT License](LICENSE).
-
