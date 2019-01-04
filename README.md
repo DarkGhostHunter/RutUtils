@@ -404,6 +404,52 @@ For convenience, this package includes a set of globally accessible functions.
 | rut_filter() | RutHelper::filter()
 | rut_rectify() | RutHelper::rectify()
 
+### Serialization
+
+RUT are JSON and array serialized with the `num` and `vd` separated, like so:
+
+```php
+<?php
+
+namespace App;
+
+use DarkGhostHunter\RutUtils\Rut;
+
+$rut = Rut::make('22605071-k');
+
+echo json_encode($rut); // {"num":"22605071","vd":"K"}
+print_r($rut->toArray()); // ['num' => 22605071, 'vd' => 'K']
+``` 
+
+You can serialize the RUT as a string. Here you have flexibility to use one of the formatting methods:
+
+* `full`: Default option. Serializes with thousand separator.
+* `basic`: No thousand separator, only the hyphen.
+* `raw`: No thousand separator nor hyphen.
+
+
+```php
+<?php
+
+namespace App;
+
+use DarkGhostHunter\RutUtils\Rut;
+
+$rut = Rut::make('22605071-k');
+
+Rut::setStringFormat('full'); 
+
+echo (string)$rut; // "22.605.071-K"
+
+Rut::setStringFormat('basic'); 
+
+echo (string)$rut; // "22605071-K"
+
+Rut::setStringFormat('raw'); 
+
+echo (string)$rut; // "22605071K"
+``` 
+
 ## License
 
 This package is licenced by the [MIT License](LICENSE).

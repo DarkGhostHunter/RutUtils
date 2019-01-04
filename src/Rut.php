@@ -44,6 +44,13 @@ class Rut implements ArrayAccess, JsonSerializable
     protected static $uppercase = true;
 
     /**
+     * Should have thousand separator on string serialization
+     *
+     * @var string
+     */
+    protected static $format = 'full';
+
+    /**
      * Attributes
      *
      * @var array
@@ -163,7 +170,15 @@ class Rut implements ArrayAccess, JsonSerializable
      */
     public function toFormattedString()
     {
-        return number_format($this->num, 0, ',', '.') . '-' . $this->vd;
+        switch (self::$format) {
+            case 'full':
+                return number_format($this->num, 0, ',', '.') . '-' . $this->vd;
+            case 'basic':
+                return $this->num.'-'.$this->vd;
+            case 'raw':
+            default:
+                return $this->num.$this->vd;
+        }
     }
 
     /**
@@ -207,6 +222,40 @@ class Rut implements ArrayAccess, JsonSerializable
     }
 
     /**
+     * How to serialize as a string
+     *
+     * @example "full", "basic", "raw"
+     * @param string $format
+     */
+    public static function setStringFormat(string $format)
+    {
+        switch ($format) {
+            case 'raw':
+                self::$format = 'raw';
+                break;
+            case 'basic':
+                self::$format = 'basic';
+                break;
+            case 'full':
+            default:
+                self::$format = 'full';
+                break;
+        }
+    }
+
+    /**
+     * How to format the RUT as a string
+     *
+     * @return string
+     */
+    public static function getStringFormat()
+    {
+        return self::$format;
+    }
+
+
+
+    /**
      * Returns a new static instance when calling static methods
      *
      * @param $name
@@ -239,6 +288,16 @@ class Rut implements ArrayAccess, JsonSerializable
     public function __set($name, $value)
     {
         // Don't allow to set attributes
+    }
+
+    /**
+     * Returns the RUT as a JSON string
+     *
+     * @return false|string
+     */
+    public function toJson()
+    {
+        return json_encode($this->toArray());
     }
 
     /**
