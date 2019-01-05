@@ -17,7 +17,7 @@ While this package works as a fire-and-forget utility for your project, ensure y
 
 ## Requirements
 
-This package only needs PHP 7.1 and over.
+This package only needs PHP 7.1.3 and later.
 
 > Optional: Know what *el weón weón weón* means.  
 
