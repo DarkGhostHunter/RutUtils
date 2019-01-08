@@ -114,7 +114,7 @@ class RutBuilder
     }
 
     /**
-     * Generate a given number of random RUTs objects
+     * Generate a given number of random RUTs as Rut instances
      *
      * @param int $iterations
      * @param int $min

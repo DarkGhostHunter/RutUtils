@@ -20,7 +20,9 @@
       "psr-4": {
         "DarkGhostHunter\\RutUtils\\" : "src"
       },
-    "files": ["helpers.php"]
+      "files": [
+        "helpers/helpers.php"
+      ]
     },
     "autoload-dev": {
       "psr-0": {

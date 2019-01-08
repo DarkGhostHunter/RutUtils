@@ -9,3 +9,5 @@ spl_autoload_register(function ($class) {
 
     include "$file";
 });
+
+include_once __DIR__ . '/helpers/helpers.php';

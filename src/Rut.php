@@ -15,9 +15,10 @@ use JsonSerializable;
  * @property-read int $num
  * @property-read string|int $vd
  *
+ * @method static string cleanRut(string $rut, bool $forceUppercase = true, bool $exception = true)
  * @method static bool validate(...$ruts)
  * @method static bool validateStrict(...$ruts)
- * @method static bool areEqual(string $rutA, string $rutB)
+ * @method static bool isEqual(...$ruts)
  * @method static array filter(...$ruts)
  * @method static Rut rectify(int $num)
  * @method static bool isPerson(string $rut)
@@ -88,6 +89,9 @@ class Rut implements ArrayAccess, JsonSerializable
      */
     public static function make(...$ruts)
     {
+        // Reset the array index to a sequential one.
+        $ruts = array_values($ruts);
+
         // First check if the dev passed one single array instead multiple $ruts.
         // If that's the case, we will unwrap the array and use that. Otherwise,
         // we will use all the arguments as they come and transform each one.
