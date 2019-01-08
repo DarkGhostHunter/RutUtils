@@ -24,8 +24,10 @@ class RutHelper
      */
     public static function cleanRut(string $rut, bool $forceUppercase = true)
     {
+        // Filter the RUT string and return only numbers and verification digit.
         $filtered = preg_filter('/(?!\d|k)./i', '', $rut) ?? $rut;
 
+        // If the filtered RUT is not empty and over the 6 characters, we're good.
         if (!empty($filtered))
             return $forceUppercase ? strtoupper($filtered) : strtolower($filtered);
 
@@ -44,7 +46,7 @@ class RutHelper
     }
 
     /**
-     * Cleans a RUT and separates it
+     * Cleans a RUT from invalid characters and separates it
      *
      * @param string $rut
      * @param bool $uppercase

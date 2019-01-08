@@ -61,7 +61,7 @@ This information identifying the person is usually a safe bet for chilean compan
 
 ### Creating a RUT
 
-To create a RUT, simple create a new `Rut`:
+To create a RUT, simple create a new `Rut` or use the `make()` static helper:
 
 ```php
 <?php 
@@ -79,15 +79,18 @@ $rutB = new Rut('14.328.145-0');
 
 // And even malformed ones with invalid characters.
 $rutC = new Rut('asdwdasd14.32.814.5-0');
+
+// And you can use the `make()` static helper for one single string
+$rutD = Rut::make('asdwdasd14.32.814.5-0');
 ```
 
-`Rut` will automatically clean the string and parse the number and verification digit
+`Rut` will automatically clean the string and parse the number and verification digit for you, so you don't have to.
 
-This object won't validate the RUT. Don't worry, we will see the Builder in a minute.
+Creating this object in these ways won't validate the RUT. Don't worry, we will see more ways to create RUTs in the next sections.
 
 #### Creating multiple RUTs
 
-Sometimes is cumbersome to do a `foreach` or a `for` loop to make RUTs. Instead, use the `make()` static method to create multiple RUTs as an array
+Sometimes is cumbersome to do a `foreach` or a `for` loop to make RUTs. Instead, use the `make()` static method, which accepts an array to transform multiple strings as RUTs.
 
 ```php
 <?php 

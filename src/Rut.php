@@ -66,11 +66,16 @@ class Rut implements ArrayAccess, JsonSerializable
      */
     public function __construct(string $rut = null, $vd = null)
     {
-        // If we're NUM+VD combination, just mix them into a RUT.
+        // First let's see if we have issued the RUT separately, meaning, the
+        // first variable is numeric and the $vd is not null. If that's the
+        // case, we will simply merge both as a string and add it parsed.
         if ($vd && is_numeric($rut)) {
             $rut .= $vd;
         }
 
+        // Since we can instantiate this Rut class without arguments, like for
+        // passing the method to the Rut Builder or Helpers, we need to check
+        // if the $rut was passed to the constructor to add it inside here.
         if ($rut) $this->addRut($rut);
     }
 
@@ -83,18 +88,20 @@ class Rut implements ArrayAccess, JsonSerializable
      */
     public static function make(...$ruts)
     {
+        // First check if the dev passed one single array instead multiple $ruts.
+        // If that's the case, we will unwrap the array and use that. Otherwise,
+        // we will use all the arguments as they come and transform each one.
         if (is_array($ruts[0]) && func_num_args() === 1) {
             $ruts = $ruts[0];
         }
 
-        $array = [];
-
-        foreach ($ruts as $rut) {
-            $array[] = new static($rut);
+        foreach ($ruts as &$rut) {
+            $rut = new static($rut);
         }
 
-        return count($array) === 1 ? $array[0] : $array;
-
+        // If the resulting array is more than one, return all the array, otherwise
+        // unpack the single value. This allows to match the arguments.
+        return count($ruts) === 1 ? $ruts[0] : $ruts;
     }
 
     /**
@@ -128,7 +135,9 @@ class Rut implements ArrayAccess, JsonSerializable
      */
     public function addRut(string $rut)
     {
-        list($this->attributes['num'], $this->attributes['vd']) = $this->separateRut($rut);
+        // Before adding a RUT to this instance, we need to separate the number
+        // and the verification digit.
+        [$this->attributes['num'], $this->attributes['vd']] = $this->separateRut($rut);
 
         return $this;
     }
@@ -203,16 +212,11 @@ class Rut implements ArrayAccess, JsonSerializable
      */
     public function __call($name, $arguments)
     {
-        if (is_callable([RutHelper::class, $name]) && in_array($name, [
-                'validate', 'areEqual', 'filter', 'rectify', 'isPerson', 'isCompany',
-            ])) {
+        if (is_callable([RutHelper::class, $name])) {
             return RutHelper::{$name}(...$arguments);
         }
 
-        if (is_callable([RutBuilder::class, $name]) && in_array($name, [
-                'generate', 'unique', 'notUnique', 'asCompany', 'asPerson', 'asRaw',
-                'asString', 'asObject',
-            ])) {
+        if (is_callable([RutBuilder::class, $name])) {
             return (new RutBuilder)->{$name}(...$arguments);
         }
 
