@@ -5,7 +5,7 @@ namespace DarkGhostHunter\RutUtils;
 trait HasHelperMethods
 {
     /**
-     * Separate a RUT string into
+     * Separate a RUT string into the RUT number and RUT verification digit
      *
      * @param string $rut
      * @return array

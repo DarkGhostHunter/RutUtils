@@ -46,12 +46,10 @@ class RutHelperTest extends TestCase
         }
     }
 
-    public function testExceptionOnEmptyCleanedRut()
+    public function testNullOnEmptyCleanedRut()
     {
-        $this->expectException(InvalidRutException::class);
-
-        RutHelper::cleanRut('asdasdasdasd', false);
-        RutHelper::cleanRut('asdasdasdasd', true);
+        $this->assertNull(RutHelper::cleanRut('asdasdasdasd', false, false));
+        $this->assertNull(RutHelper::cleanRut('asdasdasdasd', true, false));
     }
 
     public function testExplodeByLastChar()
@@ -91,6 +89,13 @@ class RutHelperTest extends TestCase
                 RutHelper::separateRut($rut)[1]
             );
         }
+    }
+
+    public function testExceptionOnSeparatedEmptyCleanedRut()
+    {
+        $this->expectException(InvalidRutException::class);
+
+        RutHelper::separateRut('this-is-no-a-rut');
     }
 
     public function testValidate()
@@ -158,17 +163,29 @@ class RutHelperTest extends TestCase
         foreach ($this->ruts as $rut) {
             $this->assertFalse(RutHelper::validateStrict($rut));
         }
-
     }
 
-    public function testAreEqual()
+    public function testAreTwoEqual()
     {
         $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4'));
+        $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4', '24.700.909-4'));
     }
 
-    public function testAreNotEqual()
+    public function testAreTwoNotEqual()
     {
         $this->assertFalse(RutHelper::isEqual(247009091, '2470!!!###0909-4'));
+        $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4', '24.700.9094'));
+    }
+
+    public function testAreEqualWithSingleArray()
+    {
+        $this->assertTrue(RutHelper::isEqual([
+            247009094, '2470!!!###0909-4'
+        ]));
+
+        $this->assertFalse(RutHelper::isEqual([
+            247009091, '2470!!!###0909-4'
+        ]));
     }
 
     public function testFilter()

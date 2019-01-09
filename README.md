@@ -10,14 +10,14 @@ A complete library for creating, manipulating and generating chilean RUTs or RUN
 This package allows you to:
 
 - **Create** a RUT object to conveniently hold the RUT information.
-- **Validate** and rectify RUTs.
+- **Validate**, clean and rectify RUTs.
 - Flexibly **generate** random RUTs.
 
-While this package works as a fire-and-forget utility for your project, ensure you read the documentation.
+While this package works as a fire-and-forget utility for your project, ensure you read the documentation so you don't repeat yourself.
 
 ## Requirements
 
-This package only needs PHP 7.1 and over.
+This package only needs PHP 7.1.3 and later.
 
 > Optional: Know what *el weón weón weón* means.  
 
@@ -51,7 +51,7 @@ If you don't have Composer in your project, ~~you should be ashamed~~ you can do
 
 ### What is a RUT or RUN?
 
-A RUT (or RUN for people) is a string of numbers which identify a person or company. They're are unique for each one, and they're never re-assigned, so the registry of RUTs is always growing upwards.
+A RUT (or RUN for people) is a string of numbers which identify a person or company. They're unique for each one, and they're never re-assigned, so the registry of RUTs is always growing.
 
 The RUT its comprised of a random Number, like `12.345.678`, and a Verification Digit, which is the result of a mathematical algorithm [(Modulo 11)](https://www.google.com/search?q=modulo+11+algorithm) over that number. This Verification Digit vary between `0` and `9`, or a `K`.
 
@@ -61,7 +61,7 @@ This information identifying the person is usually a safe bet for chilean compan
 
 ### Creating a RUT
 
-To create a RUT, simple create a new `Rut`:
+To create a RUT, simple create a new `Rut` or use the `make()` static helper:
 
 ```php
 <?php 
@@ -69,7 +69,6 @@ To create a RUT, simple create a new `Rut`:
 namespace App;
 
 use DarkGhostHunter\RutUtils\Rut;
-
 
 // Create a RUT using its numbers and verification digit separately.
 $rutA = new Rut('14328145', 0); 
@@ -79,15 +78,18 @@ $rutB = new Rut('14.328.145-0');
 
 // And even malformed ones with invalid characters.
 $rutC = new Rut('asdwdasd14.32.814.5-0');
+
+// And you can use the `make()` static helper, but for one single string
+$rutD = Rut::make('asdwdasd14.32.814.5-0');
 ```
 
-`Rut` will automatically clean the string and parse the number and verification digit
+`Rut` will automatically clean the string and parse the number and verification digit for you, so you don't have to.
 
-This object won't validate the RUT. Don't worry, we will see the Builder in a minute.
+Creating this object in these ways won't validate the RUT. Don't worry, we will see more ways to create RUTs in the next sections.
 
 #### Creating multiple RUTs
 
-Sometimes is cumbersome to do a `foreach` or a `for` loop to make RUTs. Instead, use the `make()` static method to create multiple RUTs as an array
+Sometimes is cumbersome to do a `foreach` or a `for` loop to make RUTs. Instead, use the `make()` static method, which accepts an array. It will return a sequential array with multiple `Rut` instances.
 
 ```php
 <?php 
@@ -159,13 +161,13 @@ Rut::allUppercase();
 echo Rut::make('12343580-K')->vd; // "K"
 ```
 
-This may come in handy when your source of truth manages lowercase `k`.
+This may come in handy when your source of truth manages lowercase `k` and you need strict comparison or storing mechanisms.
 
 > Ensure you set this before making RUTs, as the object will parse the RUT on input, not on output. 
 
 ### Generating random RUTs
 
-Sometimes is handy to create RUT on the fly -usually for testing purposes.
+Sometimes is handy to create RUT on the fly, usually for testing purposes when seeding a mock database full or valid users.
 
 ```php
 <?php
@@ -175,6 +177,8 @@ namespace App;
 use DarkGhostHunter\RutUtils\Rut;
 
 $rut = Rut::generate();
+
+echo $rut->toFormattedString(); // "7.976.228-8" 
 ```
 
 The default mode makes a RUT for normal people, which are bound between 1.000.000 and 30.000.000. You can use the `forCompany()` method, which will vary the result randomly between 50.000.000 and 100.000.000.
@@ -186,8 +190,8 @@ namespace App;
 
 use DarkGhostHunter\RutUtils\Rut;
 
-$rut = Rut::asPerson()->generate();
-$company = Rut::asCompany()->generate();
+echo $rut = Rut::asPerson()->generate()->toFormattedString(); // "15.846.327-K"
+echo $company = Rut::asCompany()->generate()->toFormattedString();// "54.029.467-4"
 ```
 
 Of course one may be not enough. You can add a parameter to these methods with the number of RUTs you want to make. The result will be returned as an `array`.
@@ -203,7 +207,7 @@ $peopleRuts = Rut::asPerson()->generate(10);
 $companyRuts = Rut::asCompany()->generate(35);
 ```
 
-If for some reason you need them as raw strings instead of `RUT` instances -which is very good when generating  thousands of them- use the `asRaw()` method.
+If for some reason you need them as raw strings instead of `RUT` instances, which is very good when generating  thousands of them on strict memory usage, use the `asRaw()` method.
 
 This will output the random strings like `22605071K`.
 
@@ -229,8 +233,23 @@ namespace App;
 
 use DarkGhostHunter\RutUtils\Rut;
 
-$peopleRuts = Rut::forPerson()->unique()->generate(100000);
-$companyRuts = Rut::forCompany()->unique()->generate(100000);
+$peopleRuts = Rut::asPerson()->unique()->generate(100000);
+$companyRuts = Rut::asCompany()->unique()->generate(100000);
+```
+
+### Cleaning a RUT string
+
+Sometimes you may want only the *raw* RUT string instead of a Rut instance, that may or may now have invalid characters. In any case, just call `cleanRut()`, which will return a clean raw RUT string. Additionally, you can set if you want the `K` verification character as uppercase or lowercase.
+
+```php
+<?php
+
+namespace App;
+
+use DarkGhostHunter\RutUtils\Rut;
+
+echo Rut::cleanRut('18.290.743-k', true); // "18290743K"
+echo Rut::cleanRut('f@a18765432@@7'); // "187654327"
 ```
 
 ### Validating RUT
@@ -273,7 +292,7 @@ You can use this to check if the user has responded with a valid RUT, and proces
 
 #### Strict validation
 
-You can strictly validate a RUT. The RUT being passed must have the Number with thousand separator and hyphen preceding the Verification Digit. 
+You can strictly validate a RUT. The RUT being passed must have the RUT number with thousand separator and hyphen preceding the RUT verification digit.
 
 ```php
 <?php
@@ -288,11 +307,12 @@ echo Rut::validateStrict('14.328.145-0', '12343580-K'); // false
 echo Rut::validateStrict(143281450); // false
 echo Rut::validateStrict('not-a-rut'); // false
 echo Rut::validateStrict(143281450, 'not-a-rut'); // false
+echo Rut::validateStrict('14.328.1!45-0'); // false
 ```
 
 ### Filter RUTs
 
-If you get more than one RUT, you can filter only the valid ones using `filter()`, which will take multiple RUTs and return an array comprised of only the valid ones.
+If you get more than one RUT in your application, you can filter only the valid ones using `filter()`, which will take multiple RUTs and return an array comprised of only the valid ones.
 
 ```php
 <?php
@@ -301,7 +321,7 @@ namespace App;
 
 use DarkGhostHunter\RutUtils\Rut;
 
-// Cleans the rut, and validate it 
+// Filter only the valid ruts, and leave the invalid out of the result.
 $rutsA = Rut::filter('14328145-0', '12343580-K', '94.328.145-0', 'not-a-rut');
 
 var_dump($rutsA);
@@ -328,9 +348,9 @@ var_dump($rutsB);
 
 You can use this when receiving multiple RUTs from the user Input and you need to process only those that are valid.
 
-### Compare RUT if is equal
+### Compare if RUTs are equal
 
-Instead of using `$rutA === $rutB`, you can call `isEqual()` which will clean the strings and return if both are equal RUT strings.
+Instead of using `$rutA === $rutB === $rutC`, you can call `isEqual()` which receives an array (or multiple RUTs) and return if both or all the RUTs are equal.
 
 ```php
 <?php
@@ -339,19 +359,19 @@ namespace App;
 
 use DarkGhostHunter\RutUtils\Rut;
 
-// Determine if both cleaned RUTs are equal 
-$ruts = Rut::areEqual('thisisARut12343580-K', '12343580-K');
+// Determine if these RUTs are equal 
+$ruts = Rut::isEqual('thisisARut12343580-K', '12343580-K', User::getRutFromDatabase());
 
 echo $ruts; // true
 ```
 
-You can use this for comparing the user input with the one in the database or other source of truth.
+You can use this for comparing the user input with the one in the database or other sources of truth.
 
 > This doesn't ensure these are valid, just if they're equal.
 
 ### Rectify (from a RUT Number)
 
-You may have a RUT without Verification Digit, or you may need the correct one from a whole RUT. In any case, you can use `rectify()` and pass down only the **RUT Number**, in return you will get valid Rut. 
+You may have a RUT without verification digit, or you may need the correct one from a whole RUT. In any case, you can use `rectify()` and pass down only the **RUT Number**, and in return you will get a valid `Rut` instance. 
 
 ```php
 <?php
@@ -361,12 +381,13 @@ namespace App;
 use DarkGhostHunter\RutUtils\Rut;
 
 // Creates a RUT instance from a number without Verification Digit 
-$rut = Rut::rectify('12343580');
+$rut = Rut::rectify('18765432');
 
-echo $rut; // 12.343.580-0
+echo $rut->num; // "18765432"
+echo $rut->vd; // "7"
 ```
 
-> If you pass down a whole RUT, you may get a new RUT with other Verification Digit. Ensure you pass down only the RUT Number. 
+> If you pass down a whole RUT, you may get a new RUT with an appended Verification Digit. Ensure you pass down only the RUT number. 
 
 ### Check RUT person or company
 
@@ -392,9 +413,9 @@ What this does is basically return if the RUT is between 1.000.000 and 50.000.00
 
 ### Global helper functions
 
-For convenience, this package includes a set of globally accessible functions.
+For convenience, this package includes a set of globally accessible functions. Don't worry, if you are already set a function with the same name, the package won't overwrite it.
 
-| Function | Alias for
+| Function | Aliased method
 |---|---
 | is_rut() | RutHelper::validate()
 | is_rut_strict() | RutHelper::validateStrict()
@@ -403,10 +424,11 @@ For convenience, this package includes a set of globally accessible functions.
 | is_rut_equal() | RutHelper::areEqual()
 | rut_filter() | RutHelper::filter()
 | rut_rectify() | RutHelper::rectify()
+| rut_clean() | RutHelper::cleanRut()
 
 ### Serialization
 
-RUT are JSON and array serialized with the `num` and `vd` separated, like so:
+RUT can become a JSON string and an array when serialized, which include the `num` and `vd` separated:
 
 ```php
 <?php
@@ -421,12 +443,11 @@ echo json_encode($rut); // {"num":"22605071","vd":"K"}
 print_r($rut->toArray()); // ['num' => 22605071, 'vd' => 'K']
 ``` 
 
-You can serialize the RUT as a string. Here you have flexibility to use one of the formatting methods:
+You can also serialize the RUT as a string. Here you have flexibility to use one of the formatting methods:
 
-* `full`: Default option. Serializes with thousand separator.
+* `full`: Default option. Serializes with thousand separator and hyphen.
 * `basic`: No thousand separator, only the hyphen.
 * `raw`: No thousand separator nor hyphen.
-
 
 ```php
 <?php

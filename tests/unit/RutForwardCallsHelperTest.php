@@ -9,17 +9,26 @@ use PHPUnit\Framework\TestCase;
 
 class RutForwardCallsHelperTest extends TestCase
 {
-
     protected function setUp()
     {
         \Mockery::mock('overload:' . RutHelper::class)
             ->shouldReceive([
+                'cleanRut' => true,
                 'validate' => true,
                 'areEqual' => true,
                 'rectify' => true,
                 'isPerson' => true,
                 'isCompany' => true,
             ]);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testCleanRut()
+    {
+        $this->assertTrue(Rut::cleanRut('18765432-7'));
     }
 
     /**

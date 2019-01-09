@@ -114,7 +114,7 @@ class RutBuilder
     }
 
     /**
-     * Generate a given number of random RUTs objects
+     * Generate a given number of random RUTs as Rut instances
      *
      * @param int $iterations
      * @param int $min
@@ -174,6 +174,11 @@ class RutBuilder
 
     /**
      * Remove non unique values and replaces them with new ones
+     *
+     * We use this method because it's less resource-heavy to make 100 RUTs,
+     * filter the ones repeated, count how many are left to reach the quota,
+     * generate the remaining, and repeat until there is nothing to generate,
+     * instead of checking each one if it's repeated on the resulting array.
      *
      * @param array $array
      * @return array

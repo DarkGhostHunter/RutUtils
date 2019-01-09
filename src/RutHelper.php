@@ -20,16 +20,15 @@ class RutHelper
      * @param string $rut
      * @param bool $forceUppercase
      * @return string
-     * @throws InvalidRutException
      */
     public static function cleanRut(string $rut, bool $forceUppercase = true)
     {
+        // Filter the RUT string and return only numbers and verification digit.
         $filtered = preg_filter('/(?!\d|k)./i', '', $rut) ?? $rut;
 
+        // If the filtered RUT is not empty and over the 6 characters, we're good.
         if (!empty($filtered))
             return $forceUppercase ? strtoupper($filtered) : strtolower($filtered);
-
-        throw new InvalidRutException($rut);
     }
 
     /**
@@ -44,7 +43,7 @@ class RutHelper
     }
 
     /**
-     * Cleans a RUT and separates it
+     * Cleans a RUT from invalid characters and separates it
      *
      * @param string $rut
      * @param bool $uppercase
@@ -53,7 +52,14 @@ class RutHelper
      */
     public static function separateRut(string $rut, bool $uppercase = true)
     {
-        $array = self::explodeByLastChar(self::cleanRut($rut, $uppercase));
+        // Throw an exception if after cleaning the RUT we receive null, since
+        // we cannot separate an empty string, thus making the resulting
+        // array impossible to return. Also, it makes it catchable.
+        if (empty($cleaned = self::cleanRut($rut, $uppercase))) {
+            throw new InvalidRutException($rut);
+        }
+
+        $array = self::explodeByLastChar($cleaned);
 
         $array[0] = (int)$array[0];
 
@@ -136,7 +142,7 @@ class RutHelper
     protected static function validateRut(string $rut)
     {
         try {
-            list ($num, $vd) = self::separateRut($rut);
+            [$num, $vd] = self::separateRut($rut);
         } catch (InvalidRutException $exception) {
             return false;
         }
@@ -151,14 +157,33 @@ class RutHelper
     /**
      * Return if two or more RUTs are equal
      *
-     * @param string $rutA
-     * @param string $rutB
+     * @param array $ruts
      * @return bool
-     * @throws InvalidRutException
      */
-    public static function isEqual(string $rutA, string $rutB)
+    public static function isEqual(...$ruts)
     {
-        return self::cleanRut($rutA) === self::cleanRut($rutB);
+        // If the user passed down one single argument as an array, we will use
+        // that and unwrap it.
+        if (is_array($ruts[0]) && func_num_args() === 1) {
+            $ruts = $ruts[0];
+        }
+
+        // First, restore the keys of the array.
+        $ruts = array_values($ruts);
+
+        // Clean every value
+        foreach ($ruts as &$rut) {
+            $rut = self::cleanRut($rut);
+        }
+
+        // To see if all the ruts are equal we will remove the duplicates values.
+        // Doing this should reduce the array to only 1 non-empty item, which
+        // means that all the ruts are equal. Otherwise, they're not equal.
+        if (count($ruts = array_unique($ruts)) === 1 && !empty($ruts[0])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
