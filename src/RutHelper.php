@@ -179,11 +179,7 @@ class RutHelper
         // To see if all the ruts are equal we will remove the duplicates values.
         // Doing this should reduce the array to only 1 non-empty item, which
         // means that all the ruts are equal. Otherwise, they're not equal.
-        if (count($ruts = array_unique($ruts)) === 1 && !empty($ruts[0])) {
-            return true;
-        }
-
-        return false;
+        return count($ruts = array_unique($ruts)) === 1 && !empty($ruts[0]);
     }
 
     /**
