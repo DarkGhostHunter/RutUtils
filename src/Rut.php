@@ -305,7 +305,7 @@ class Rut implements ArrayAccess, JsonSerializable
      */
     public function toJson()
     {
-        return $this->jsonSerialize();
+        return json_encode($this->jsonSerialize());
     }
 
     /**
