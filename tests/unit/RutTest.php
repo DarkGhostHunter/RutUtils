@@ -282,10 +282,7 @@ class RutTest extends TestCase
 
         $this->assertJson($json = json_encode($rut));
 
-        $array = json_decode($json, true);
-
-        $this->assertArrayHasKey('num', $array);
-        $this->assertArrayHasKey('vd', $array);
+        $this->assertEquals(json_decode($json, true), '66.123.136-K');
     }
 
     public function testToJson()
