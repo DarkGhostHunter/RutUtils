@@ -18,6 +18,7 @@ class RutHelperTest extends TestCase
         136665782,
         '22605071k',
         '14379170K',
+        '143281450',
     ];
 
     /** @var array  */
@@ -28,6 +29,7 @@ class RutHelperTest extends TestCase
         13666578,
         '22605071J',
         '14379171K',
+        '14328145K'
     ];
 
     protected $malformedRuts = [
