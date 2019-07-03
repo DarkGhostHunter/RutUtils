@@ -53,7 +53,6 @@ trait HasHelperMethods
      *
      * @param string $rut
      * @return bool
-     * @throws Exceptions\InvalidRutException
      */
     public function isEqualTo(string $rut)
     {

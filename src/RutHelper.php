@@ -107,7 +107,7 @@ class RutHelper
         foreach ($ruts as $rut) {
             if (!self::validateRut($rut)) {
                 return false;
-            };
+            }
         }
         return true;
     }
@@ -147,11 +147,7 @@ class RutHelper
             return false;
         }
 
-        if ($vd != self::getVd($num)) {
-            return false;
-        }
-
-        return true;
+        return strtoupper($vd) === (string)self::getVd($num);
     }
 
     /**
