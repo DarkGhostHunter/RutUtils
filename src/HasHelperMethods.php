@@ -5,15 +5,14 @@ namespace DarkGhostHunter\RutUtils;
 trait HasHelperMethods
 {
     /**
-     * Separate a RUT string into the RUT number and RUT verification digit
+     * Separate a RUT string into an array with the number and verification digit
      *
      * @param string $rut
      * @return array
-     * @throws Exceptions\InvalidRutException
      */
     protected function separateRut(string $rut)
     {
-        return RutHelper::separateRut($rut, self::$uppercase);
+        return RutHelper::separateRut($rut, static::$globalUppercase);
     }
 
     /**
@@ -27,12 +26,21 @@ trait HasHelperMethods
     }
 
     /**
+     * Returns if the present RUT instance is invalid
+     *
+     * @return bool
+     */
+    public function isInvalid()
+    {
+        return ! $this->isValid();
+    }
+
+    /**
      * Return if the RUT is for a Person
      *
      * @return bool
-     * @throws Exceptions\InvalidRutException
      */
-    public function person()
+    public function isPerson()
     {
         return RutHelper::isPerson($this);
     }
@@ -41,11 +49,10 @@ trait HasHelperMethods
      * Return if the RUT is for a Company
      *
      * @return bool
-     * @throws Exceptions\InvalidRutException
      */
-    public function company()
+    public function isCompany()
     {
-        return !$this->person();
+        return !$this->isPerson();
     }
 
     /**

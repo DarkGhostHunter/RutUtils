@@ -2,62 +2,48 @@
 
 namespace DarkGhostHunter\RutUtils;
 
-class RutBuilder
+class RutGenerator
 {
-    /**
-     * Window of randomness
-     *
-     * @var bool
-     */
-    protected $person = true;
+    use BuildsGenerator;
 
     /**
-     * What to output
+     * Static array for handling static generation
      *
-     * @example 'object', 'string', 'raw'
-     * @var string
+     * @var array
      */
-    protected $output = 'object';
+    protected static $static = [];
 
     /**
-     * Hoy many RUTs to generate
+     * How many RUTs to generate.
      *
      * @var int
      */
     protected $iterations = 1;
 
     /**
-     * Check if all random RUTs must be unique
-     *
-     * @var bool
-     */
-    protected $unique = false;
-
-    /**
-     * Random RUT floor
+     * Random RUT floor.
      *
      * @var int
      */
     protected $min;
 
     /**
-     * Random RUT ceiling
+     * Random RUT ceiling.
      *
      * @var int
      */
     protected $max;
 
     /**
-     * Generates a new random Rut object
+     * Generates a new random Rut object or an array of them.
      *
      * @param int $iterations
      * @param bool $unwrapSingle
      * @return array|Rut
-     * @throws Exceptions\InvalidRutException
      */
     public function generate(int $iterations = 1, bool $unwrapSingle = true)
     {
-        list ($this->min, $this->max) = $this->prepareMinMax();
+        [$this->min, $this->max] = $this->prepareMinMax();
 
         $this->iterations = $iterations = max(1, $iterations);
 
@@ -71,20 +57,36 @@ class RutBuilder
     }
 
     /**
-     * Performs the random generation of RUTs
+     * Generates one unique result by checking an internal static array
+     *
+     * @return array|\DarkGhostHunter\RutUtils\Rut
+     */
+    public function generateStatic()
+    {
+        do {
+            $result = $this->generate();
+        } while (!in_array($result, self::$static, true));
+
+        return $result;
+    }
+
+    /**
+     * Performs the random generation of RUTs by the given iterations.
      *
      * @param int $iterations
      * @return array
-     * @throws Exceptions\InvalidRutException
      */
     protected function performGenerate(int $iterations)
     {
         switch ($this->output) {
-            case 'raw':
-                $array = $this->generateRaws($iterations, $this->min, $this->max);
+            case Rut::FORMAT_RAW:
+                $array = $this->generateRaw($iterations, $this->min, $this->max);
                 break;
-            case 'string':
-                $array = $this->generateStrings($iterations, $this->min, $this->max);
+            case Rut::FORMAT_BASIC:
+                $array = $this->generateBasic($iterations, $this->min, $this->max);
+                break;
+            case Rut::FORMAT_STRICT:
+                $array = $this->generateStrict($iterations, $this->min, $this->max);
                 break;
             case 'object':
             default:
@@ -96,7 +98,7 @@ class RutBuilder
     }
 
     /**
-     * Prepare the Min and Max numbers to generate
+     * Prepare the minimum and maximum RUT numbers to generate.
      *
      * @return array
      */
@@ -114,34 +116,54 @@ class RutBuilder
     }
 
     /**
-     * Generate a given number of random RUTs as Rut instances
+     * Generates a given number of random RUTs as strictly formatted strings.
      *
      * @param int $iterations
      * @param int $min
      * @param int $max
      * @return array
-     * @throws Exceptions\InvalidRutException
      */
-    protected function generateObjects(int $iterations, int $min, int $max)
+    protected function generateStrict(int $iterations, int $min, int $max)
     {
         $array = [];
 
         for ($i = 0; $i < $iterations; ++$i) {
-            $array[] = RutHelper::rectify(rand($min, $max));
+            $rut = rand($min, $max);
+            $array[] = number_format($rut, 0, ',', '.') . '-' . RutHelper::getVd($rut);
         }
 
         return $array;
     }
 
     /**
-     * Generate a given number of random RUTs strings
+     * Generates a given number of random RUTs as basic formatted strings.
      *
      * @param int $iterations
      * @param int $min
      * @param int $max
      * @return array
      */
-    protected function generateRaws(int $iterations, int $min, int $max)
+    protected function generateBasic(int $iterations, int $min, int $max)
+    {
+        $array = [];
+
+        for ($i = 0; $i < $iterations; ++$i) {
+            $rut = rand($min, $max);
+            $array[] = $rut . '-' . RutHelper::getVd($rut);
+        }
+
+        return $array;
+    }
+
+    /**
+     * Generate a given number of random RUTs as raw strings.
+     *
+     * @param int $iterations
+     * @param int $min
+     * @param int $max
+     * @return array
+     */
+    protected function generateRaw(int $iterations, int $min, int $max)
     {
         $array = [];
 
@@ -153,20 +175,19 @@ class RutBuilder
     }
 
     /**
-     * Generates a given number of random RUTs formatted strings
+     * Generate a given number of random RUTs as Rut instances.
      *
      * @param int $iterations
      * @param int $min
      * @param int $max
      * @return array
      */
-    protected function generateStrings(int $iterations, int $min, int $max)
+    protected function generateObjects(int $iterations, int $min, int $max)
     {
         $array = [];
 
         for ($i = 0; $i < $iterations; ++$i) {
-            $rut = rand($min, $max);
-            $array[] = number_format($rut, 0, ',', '.') . '-' . RutHelper::getVd($rut);
+            $array[] = RutHelper::rectify(rand($min, $max));
         }
 
         return $array;
@@ -182,7 +203,6 @@ class RutBuilder
      *
      * @param array $array
      * @return array
-     * @throws Exceptions\InvalidRutException
      */
     protected function fillNonUniqueIterations(array &$array)
     {
@@ -200,89 +220,14 @@ class RutBuilder
     }
 
     /**
-     * Generate unique RUTs
+     * Dynamically handle static calls to a new object instance
      *
-     * @return $this
+     * @param $name
+     * @param $arguments
+     * @return \DarkGhostHunter\RutUtils\RutGenerator
      */
-    public function unique()
+    public static function __callStatic($name, $arguments)
     {
-        $this->unique = true;
-
-        return $this;
+        return (new static)->{$name}(...$arguments);
     }
-
-    /**
-     * Generate RUTs that may be repeated
-     *
-     * @return $this
-     */
-    public function notUnique()
-    {
-        $this->unique = false;
-
-        return $this;
-    }
-
-    /**
-     * Return Companies RUTs
-     *
-     * @return $this
-     */
-    public function asCompany()
-    {
-        $this->person = false;
-
-        return $this;
-    }
-
-    /**
-     * Return Persons RUTs
-     *
-     * @return $this
-     */
-    public function asPerson()
-    {
-        $this->person = true;
-
-        return $this;
-    }
-
-    /**
-     * Return RUTs as raw strings
-     *
-     * @example '22605071K'
-     * @return $this
-     */
-    public function asRaw()
-    {
-        $this->output = 'raw';
-
-        return $this;
-    }
-
-    /**
-     * Return RUTs as formatted strings
-     *
-     * @example '22.605.071-K'
-     * @return $this
-     */
-    public function asString()
-    {
-        $this->output = 'string';
-
-        return $this;
-    }
-
-    /**
-     * Return RUTs as Rut object
-     *
-     * @return $this
-     */
-    public function asObject()
-    {
-        $this->output = 'object';
-
-        return $this;
-    }
-
 }

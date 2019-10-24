@@ -1,5 +1,7 @@
 <?php
 
+use DarkGhostHunter\RutUtils\RutHelper;
+
 if (!function_exists('is_rut')) {
 
     /**
@@ -10,7 +12,7 @@ if (!function_exists('is_rut')) {
      */
     function is_rut(...$rut)
     {
-        return \DarkGhostHunter\RutUtils\RutHelper::validate(...$rut);
+        return RutHelper::validate(...$rut);
     }
 }
 
@@ -24,7 +26,7 @@ if (!function_exists('is_rut_strict')) {
      */
     function is_rut_strict(...$rut)
     {
-        return \DarkGhostHunter\RutUtils\RutHelper::validateStrict(...$rut);
+        return RutHelper::validateStrict(...$rut);
     }
 }
 
@@ -38,7 +40,7 @@ if (!function_exists('is_rut_equal')) {
      */
     function is_rut_equal(...$ruts)
     {
-        return \DarkGhostHunter\RutUtils\RutHelper::isEqual(...$ruts);
+        return RutHelper::isEqual(...$ruts);
     }
 }
 
@@ -51,7 +53,7 @@ if (!function_exists('rut_filter')) {
      * @return array
      */
     function rut_filter(...$ruts) {
-        return \DarkGhostHunter\RutUtils\RutHelper::filter(...$ruts);
+        return RutHelper::filter(...$ruts);
     }
 }
 
@@ -65,7 +67,7 @@ if (!function_exists('rut_rectify')) {
      * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
      */
     function rut_rectify(int $num) {
-        return \DarkGhostHunter\RutUtils\RutHelper::rectify($num);
+        return RutHelper::rectify($num);
     }
 }
 
@@ -79,7 +81,7 @@ if (!function_exists('is_rut_person')) {
      * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
      */
     function is_rut_person(string $rut) {
-        return \DarkGhostHunter\RutUtils\RutHelper::isPerson($rut);
+        return RutHelper::isPerson($rut);
     }
 }
 
@@ -93,7 +95,7 @@ if (!function_exists('is_rut_company')) {
      * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
      */
     function is_rut_company(string $rut) {
-        return \DarkGhostHunter\RutUtils\RutHelper::isCompany($rut);
+        return RutHelper::isCompany($rut);
     }
 }
 
@@ -106,7 +108,7 @@ if (!function_exists('rut_clean')) {
      * @return string
      */
     function rut_clean(string $rut) {
-        return \DarkGhostHunter\RutUtils\RutHelper::cleanRut($rut);
+        return RutHelper::cleanRut($rut);
     }
 }
 

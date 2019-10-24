@@ -3,16 +3,22 @@
 namespace DarkGhostHunter\RutUtils\Exceptions;
 
 use Exception;
-use Throwable;
 
 class InvalidRutException extends Exception
 {
-
-    public function __construct(string $message = "", int $code = 0, Throwable $previous = null)
+    /**
+     * Create a new InvalidRutException instance.
+     *
+     * @param $expected
+     * @param $actual
+     * @param  array $ruts
+     */
+    public function __construct($expected = 'all', $actual = 'not all', array $ruts)
     {
-        $message = "Cannot make an invalid RUT: $message";
+        $message = $expected === 1
+            ? "The RUT [$ruts[0]] is invalid."
+            : "Processed $expected RUTs but $actual are valid.";
 
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message);
     }
-
 }

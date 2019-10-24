@@ -3,9 +3,9 @@
 namespace DarkGhostHunter\RutUtils;
 
 use ArrayAccess;
-use BadMethodCallException;
-use DarkGhostHunter\RutUtils\Exceptions\InvalidRutException;
+use Serializable;
 use JsonSerializable;
+use DarkGhostHunter\RutUtils\Exceptions\InvalidRutException;
 
 /**
  * Class Rut
@@ -15,276 +15,153 @@ use JsonSerializable;
  * @property-read int $num
  * @property-read string|int $vd
  *
- * @method static string cleanRut(string $rut, bool $forceUppercase = true, bool $exception = true)
- * @method static bool validate(...$ruts)
- * @method static bool validateStrict(...$ruts)
- * @method static bool isEqual(...$ruts)
- * @method static array filter(...$ruts)
- * @method static Rut rectify(int $num)
- * @method static bool isPerson(string $rut)
- * @method static bool isCompany(string $rut)
- *
- * @method static array|Rut generate(int $iterations = 1, bool $unwrapSingle = true)
- * @method static RutBuilder unique()
- * @method static RutBuilder notUnique()
- * @method static RutBuilder asCompany()
- * @method static RutBuilder asPerson()
- * @method static RutBuilder asRaw()
- * @method static RutBuilder asString()
- * @method static RutBuilder asObject()
  */
-class Rut implements ArrayAccess, JsonSerializable
+class Rut implements ArrayAccess, JsonSerializable, Serializable
 {
-    use HasHelperMethods;
+    use SerializesToJson,
+        HasHelperMethods,
+        HasFormats,
+        HasCallbacks;
+
+    public const FORMAT_STRICT = 'strict';
+    public const FORMAT_BASIC = 'basic';
+    public const FORMAT_RAW = 'raw';
 
     /**
-     * If `K` should be treated as uppercase.
-     *
-     * @var bool
-     */
-    protected static $uppercase = true;
-
-    /**
-     * Should have thousand separator on string serialization
-     *
-     * @var string
-     */
-    protected static $format = 'full';
-
-    /**
-     * Attributes
+     * RUT Composition
      *
      * @var array
      */
-    protected $attributes;
+    protected $rut;
 
     /**
-     * Rut constructor.
+     * Makes one Rut instance. No validation is done.
      *
-     * @param string|null $rut
-     * @param string|null $vd
-     * @throws InvalidRutException
+     * @param $rut
+     * @param  null $vd
+     * @return \DarkGhostHunter\RutUtils\Rut
      */
-    public function __construct(string $rut = null, $vd = null)
+    public static function make($rut, $vd = null)
     {
-        // First let's see if we have issued the RUT separately, meaning, the
-        // first variable is numeric and the $vd is not null. If that's the
-        // case, we will simply merge both as a string and add it parsed.
-        if ($vd && is_numeric($rut)) {
-            $rut .= $vd;
-        }
-
-        // Since we can instantiate this Rut class without arguments, like for
-        // passing the method to the Rut Builder or Helpers, we need to check
-        // if the $rut was passed to the constructor to add it inside here.
-        if ($rut) $this->addRut($rut);
+        return new static($rut, $vd);
     }
 
     /**
-     * Creates a new Rut instance
+     * Makes many Rut instances from the given array
      *
-     * @param mixed ...$ruts
-     * @return Rut|array
-     * @throws InvalidRutException
+     * @param  array $ruts
+     * @return array
      */
-    public static function make(...$ruts)
+    public static function makeMany(...$ruts)
     {
-        // Reset the array index to a sequential one.
-        $ruts = array_values($ruts);
+        $ruts = RutHelper::unpack($ruts);
 
-        // First check if the dev passed one single array instead multiple $ruts.
-        // If that's the case, we will unwrap the array and use that. Otherwise,
-        // we will use all the arguments as they come and transform each one.
-        if (is_array($ruts[0]) && func_num_args() === 1) {
-            $ruts = $ruts[0];
+        foreach ($ruts as $key => $value) {
+            [$num, $vd] = is_array($value) ? array_pad($value, 2, null) : [$value, null];
+            $ruts[$key] = static::make($num, $vd);
         }
 
-        foreach ($ruts as &$rut) {
-            $rut = new static($rut);
+        foreach (static::$after as $callback) {
+            $ruts = $callback($ruts);
         }
 
-        // If the resulting array is more than one, return all the array, otherwise
-        // unpack the single value. This allows to match the arguments.
-        return count($ruts) === 1 ? $ruts[0] : $ruts;
+        return $ruts;
     }
 
     /**
-     * Makes only Valid Ruts
+     * Makes only Valid Ruts, discarding the wrong ones.
      *
-     * @param mixed ...$ruts
-     * @return Rut|array
-     * @throws InvalidRutException
+     * @param  array $ruts
+     * @return array
      */
     public static function makeValid(...$ruts)
     {
-        $ruts = self::make(...$ruts);
+        $ruts = RutHelper::unpack($ruts);
 
-        $ruts = is_array($ruts) ? $ruts : [$ruts];
-
-        foreach ($ruts as $rut) {
-            if (!$rut->isValid()) {
-                throw new InvalidRutException($rut);
-            }
+        foreach ($ruts as $key => $value) {
+            [$num, $vd] = is_array($value) ? array_pad($value, 2, null) : [$value, null];
+            $ruts[$key] = static::make($num, $vd);
         }
 
-        return count($ruts) === 1 ? $ruts[0] : $ruts;
+        $ruts = RutHelper::filter($ruts);
+
+        foreach (static::$after as $callback) {
+            $ruts = $callback($ruts);
+        }
+
+        return $ruts;
     }
 
     /**
-     * Adds a RUT to the instance
+     * Creates only valid RUTs, or throw an exception
      *
-     * @param string $rut
-     * @return $this
-     * @throws InvalidRutException
+     * @param  array $ruts
+     * @return array|mixed
+     * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
      */
-    public function addRut(string $rut)
+    public static function makeOrThrow(...$ruts)
     {
-        // Before adding a RUT to this instance, we need to separate the number
-        // and the verification digit.
-        [$this->attributes['num'], $this->attributes['vd']] = $this->separateRut($rut);
+        $ruts = RutHelper::unpack($ruts);
+
+        $expected = count($ruts);
+
+        $ruts = RutHelper::filter(static::makeMany($ruts));
+
+        if (($actual = count($ruts)) < $expected) {
+            throw new InvalidRutException($expected, $actual, $ruts);
+        }
+
+        return $ruts;
+    }
+
+    /**
+     * Creates a new Rut instance.
+     *
+     * @param integer $num
+     * @param string $vd
+     */
+    public function __construct($num = null, string $vd = null)
+    {
+        if ($num) {
+            $this->putRut($num, $vd);
+        }
+    }
+
+    /**
+     * Adds a RUT string to the instance, or replaces the one existing.
+     *
+     * @param string|int $num
+     * @param  null $vd
+     * @return $this
+     */
+    public function putRut($num, $vd = null)
+    {
+        [$this->rut['num'], $this->rut['vd']] = $vd
+            ? [$num, $this->shouldUppercase() ? strtoupper($vd) : $vd]
+            : RutHelper::separateRut($num, static::$globalUppercase);
 
         return $this;
     }
 
     /**
-     * Set all RUT to use uppercase `K`
-     *
-     * @return void
-     */
-    public static function allUppercase()
-    {
-        self::$uppercase = true;
-    }
-
-    /**
-     * Set all RUT to use lowercase `K`
-     *
-     * @return void
-     */
-    public static function allLowercase()
-    {
-        self::$uppercase = false;
-    }
-
-    /**
-     * Returns the raw string of the RUT
-     *
-     * @return string
-     */
-    public function toRawString()
-    {
-        return $this->num . $this->vd;
-    }
-
-    /**
-     * Returns a formatted RUT string
-     *
-     * @return string
-     */
-    public function toFormattedString()
-    {
-        switch (self::$format) {
-            case 'full':
-                return number_format($this->num, 0, ',', '.') . '-' . $this->vd;
-            case 'basic':
-                return $this->num.'-'.$this->vd;
-            case 'raw':
-            default:
-                return $this->num.$this->vd;
-        }
-    }
-
-    /**
-     * Return the object
+     * Returns the RUT as an array
      *
      * @return array
      */
-    public function toArray()
+    public function getRut()
     {
-        return [
-            'num' => $this->num,
-            'vd' => $this->vd,
-        ];
-    }
-
-    /**
-     * Forwards calls to the Helper or Builder
-     *
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     */
-    public function __call($name, $arguments)
-    {
-        if (is_callable([RutHelper::class, $name])) {
-            return RutHelper::{$name}(...$arguments);
-        }
-
-        if (is_callable([RutBuilder::class, $name])) {
-            return (new RutBuilder)->{$name}(...$arguments);
-        }
-
-        throw new BadMethodCallException(sprintf(
-            'Call to undefined method %s::%s()', static::class, $name
-        ));
-    }
-
-    /**
-     * How to serialize as a string
-     *
-     * @example "full", "basic", "raw"
-     * @param string $format
-     */
-    public static function setStringFormat(string $format)
-    {
-        switch ($format) {
-            case 'raw':
-                self::$format = 'raw';
-                break;
-            case 'basic':
-                self::$format = 'basic';
-                break;
-            case 'full':
-            default:
-                self::$format = 'full';
-                break;
-        }
-    }
-
-    /**
-     * How to format the RUT as a string
-     *
-     * @return string
-     */
-    public static function getStringFormat()
-    {
-        return self::$format;
-    }
-
-
-
-    /**
-     * Returns a new static instance when calling static methods
-     *
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     * @throws InvalidRutException
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        return (new static())->{$name}(...$arguments);
+        return $this->rut;
     }
 
     /**
      * Dynamically manage getting the RUT attributes
      *
      * @param $name
-     * @return mixed|null
+     * @return string|int|null
      */
     public function __get($name)
     {
-        return $this->attributes[$name] ?? null;
+        return $this->rut[$name] ?? null;
     }
 
     /**
@@ -296,6 +173,70 @@ class Rut implements ArrayAccess, JsonSerializable
     public function __set($name, $value)
     {
         // Don't allow to set attributes
+    }
+
+    /**
+     * Returns if an attribute is set
+     *
+     * @param $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return isset($this->rut[$name]);
+    }
+
+    /**
+     * Unset a property or attribute
+     *
+     * @param $name
+     */
+    public function __unset($name)
+    {
+        // Dont' allow to unset attributes Ruts
+    }
+
+    /**
+     * Whether a offset exists
+     *
+     * @param $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
+    {
+        return isset($this->rut[$offset]);
+    }
+
+    /**
+     * Offset to retrieve
+     *
+     * @param $offset
+     * @return mixed|null
+     */
+    public function offsetGet($offset)
+    {
+        return $this->rut[$offset] ?? null;
+    }
+
+    /**
+     * Offset to set
+     *
+     * @param $offset
+     * @param $value
+     */
+    public function offsetSet($offset, $value)
+    {
+        // Dont' allow to set attributes
+    }
+
+    /**
+     * Offset to unset
+     *
+     * @param $offset
+     */
+    public function offsetUnset($offset)
+    {
+        // Dont' allow to unset attributes Ruts
     }
 
     /**
@@ -319,55 +260,39 @@ class Rut implements ArrayAccess, JsonSerializable
     }
 
     /**
-     * Specify data which should be serialized to JSON
+     * Return an array representation of the Rut instance
+     *
+     * @return array|string
+     */
+    public function toArray()
+    {
+        return $this->rut;
+    }
+
+    /**
+     * String representation of object
      *
      * @return string
      */
-    public function jsonSerialize()
+    public function serialize()
     {
-        return $this->__toString();
+        return $this->toRawString();
     }
 
     /**
-     * Whether a offset exists
+     * Constructs the object
      *
-     * @param $offset
-     * @return bool
+     * @param  string $serialized
+     * @return void
+     * @since 5.1.0
      */
-    public function offsetExists($offset)
+    public function unserialize($serialized)
     {
-        return isset($this->attributes[$offset]);
-    }
+        [$num, $vd] = str_split($serialized, strlen($serialized) - 1);
 
-    /**
-     * Offset to retrieve
-     *
-     * @param $offset
-     * @return mixed|null
-     */
-    public function offsetGet($offset)
-    {
-        return $this->attributes[$offset] ?? null;
-    }
-
-    /**
-     * Offset to set
-     *
-     * @param $offset
-     * @param $value
-     */
-    public function offsetSet($offset, $value)
-    {
-        // Dont' allow to set attributes
-    }
-
-    /**
-     * Offset to unset
-     *
-     * @param $offset
-     */
-    public function offsetUnset($offset)
-    {
-        // Dont' allow to unset attributes Ruts
+        $this->rut = [
+            'num' => (int)$num,
+            'vd' => is_numeric($vd) ? (int)$vd : $vd,
+        ];
     }
 }
