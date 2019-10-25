@@ -63,18 +63,7 @@ class RutHelper
      */
     public static function validate(...$ruts)
     {
-        return static::performValidateLazy(static::unpack($ruts));
-    }
-
-    /**
-     * Performs the lazy validation of the RUT strings
-     *
-     * @param array $ruts
-     * @return bool
-     */
-    protected static function performValidateLazy(array $ruts)
-    {
-        foreach ($ruts as $rut) {
+        foreach (static::unpack($ruts) as $rut) {
             if (!static::validateRut($rut)) {
                 return false;
             }
@@ -90,19 +79,10 @@ class RutHelper
      */
     public static function validateStrict(...$ruts)
     {
-        return static::performValidateStrict(static::unpack($ruts));
-    }
-
-    /**
-     * Performs the strict validation of the RUT strings
-     *
-     * @param array $ruts
-     * @return bool
-     */
-    protected static function performValidateStrict(array $ruts)
-    {
-        foreach ($ruts as $rut) {
-            if (!preg_match('/(\d){1,2}.\d{3}.\d{3}-[\dkK]/', $rut) || !static::validateRut($rut)) {
+        foreach (static::unpack($ruts) as $rut) {
+            if (is_string($rut)
+                && preg_match('/(\d){1,2}.\d{3}.\d{3}-[\dkK]/', $rut)
+                && static::validateRut($rut)) {
                 return false;
             }
         }
@@ -160,7 +140,7 @@ class RutHelper
     {
         [$num] = $vd ? [$rut, $vd] : static::separateRut($rut);
 
-        return $num && $num < Rut::COMPANY_RUT_BASE && $num > 1000000;
+        return $num && $num < Rut::COMPANY_RUT_BASE;
     }
 
     /**

@@ -210,7 +210,7 @@ Rut::allUppercase();
 echo Rut::make('12343580', 'K')->vd; // "K"
 ```
 
-Additionally, you can change thins configuration for a single instance by using `uppercase()` and `lowercase()`.
+Additionally, you can change this configuration for a single instance by using `uppercase()` and `lowercase()`.
 
 ```php
 <?php
@@ -228,13 +228,13 @@ $rut->uppercase();
 echo $rut->vd; // "k"
 ```
 
-This may come in handy when your source of truth manages lowercase `k` and you need strict comparison or storing mechanisms.
+This may come in handy when your source of truth manages lowercase `k` and you need strict comparison for storing, or normalize it.
 
 ### Generating RUTs
 
 Sometimes is handy to create a RUT on the fly, usually for testing purposes when seeding and mocking.
 
-You can do that using the `RutGenerator` class and use the methods to build how you want to generate your RUTs. The methods are fluent, meaning, you can chain them, until you use the `generate()` method.
+You can do that using the `RutGenerator` class and use the methods to build how you want to generate your RUTs. The methods are fluent, meaning, you can chain them until you use the `generate()` method.
 
 ```php
 <?php
@@ -287,17 +287,17 @@ $strict = RutGenerator::make()->asStrict()->generate(30);
 
 #### Generating random unique RUTs
 
-If you need to create more than thousands of RUTs without the risk of having them duplicated, use the `unique()` method.
+If you need to create more than thousands of RUTs without the risk of having them duplicated, use the `withoutDuplicates()` method.
 
 ```php
 <?php
 
 use DarkGhostHunter\RutUtils\RutGenerator;
 
-$ruts = RutGenerator::make()->unique()->generate(100000);
+$ruts = RutGenerator::make()->withoutDuplicates()->generate(100000);
 ```
 
-##### Unique results
+##### Unique results between calls
 
 You may have a custom seeder in your application that may call  `generate()` every single time, increasing risk of collisions with each generation. Fear not! Using the `generateStatic()` you are guaranteed to get unique results during a single application lifecycle.
 
@@ -323,6 +323,9 @@ $seeder = function ($user) {
 foreach ($users as $key => $user) {
     $users[$key] = $seeder($user);
 }
+
+// Flush the static array for the next seeder call
+RutGenerator::make()->flushStatic();
 ```
 
 ### Helpers
@@ -349,8 +352,8 @@ Clears a RUT string from invalid characters. Additionally, you can set if you wa
 
 use DarkGhostHunter\RutUtils\RutHelper;
 
-echo RutHelper::cleanRut('f@a18765432@@7'); // "18.765.432-7"
-echo RutHelper::cleanRut('18.290.743-K', false); // "18.290.743-k"
+echo RutHelper::cleanRut('f@a18765432@@7'); // "187654327"
+echo RutHelper::cleanRut('18.290.743-K', false); // "18290743k"
 ```
 
 #### `separateRut`
@@ -372,7 +375,9 @@ RutHelper::separateRut('18.290.743-K', false);
 
 #### `validate`
 
-Checks if the RUTs issued are valid. If there are many RUTs, it will return `true` if all the RUTs are valid, and `false` if at least one is invalid.
+Checks if the RUTs issued are valid. 
+
+If there are more than one RUT, it will return `true` if all the RUTs are valid, and `false` if at least one is invalid.
 
 ```php
 <?php
@@ -386,7 +391,7 @@ echo RutHelper::validate('not-a-rut'); // false
 echo RutHelper::validate(['14.328.145-0', '12343580-K', 'foo']); // false
 ```
 
-Alternatively, you can use the `Rut` object itself (which cleans any non-RUT character).
+Alternatively, you can use the `Rut` object itself.
 
 ```php
 <?php
@@ -396,14 +401,14 @@ use DarkGhostHunter\RutUtils\Rut;
 // Cleans the rut, and validate it 
 echo Rut::make('14328145-0')->isValid(); // true
 echo Rut::make('94.328.145-0')->isValid(); // false
-echo Rut::make('cleanthis14328145-0-deletethis')->isValid(); // true
+echo Rut::make('cleanthis14328145-0-andthistoo')->isValid(); // true
 ```
-
-You can use this to check if the user has responded with a valid RUT, and process the Request if it is.
 
 #### `validateStrict`
 
-You can strictly validate a RUT. The RUT being passed must have the RUT number with thousand separator and hyphen preceding the RUT verification digit.
+You can strictly validate a RUT. The RUT value being passed must be a string with thousand separator and hyphen preceding the RUT verification digit.
+
+If there are more than one RUT, it will return `true` if all the RUTs are valid, and `false` if at least one is invalid.
 
 ```php
 <?php
@@ -421,7 +426,7 @@ echo RutHelper::validateStrict('14.328.1!45-0'); // false
 
 #### `filter`
 
-Filter only the valid RUTs, returning the array of RUTs comprised of only the valid ones.
+Filter an array of RUTs, returning an array of only the valid RUTs.
 
 ```php
 <?php
@@ -429,7 +434,12 @@ Filter only the valid RUTs, returning the array of RUTs comprised of only the va
 use DarkGhostHunter\RutUtils\RutHelper;
 
 // Filter only the valid ruts, and leave the invalid out of the result.
-$rutsA = RutHelper::filter('14328145-0', '12343580-K', '94.328.145-0', 'not-a-rut');
+$rutsA = RutHelper::filter(
+    '14328145-0', 
+    '12343580-K', 
+    '94.328.145-0', 
+    'not-a-rut'
+);
 
 var_dump($rutsA);
 
@@ -454,24 +464,24 @@ var_dump($rutsB);
 ```
 #### `rectify`
 
-Receives only the RUT number and returns a valid `Rut` instance with the verification digit. 
+Receives only the RUT number and returns a valid `Rut` instance with the corresponding verification digit. 
 
 ```php
 <?php
 
-use DarkGhostHunter\RutUtils\Rut;
+use DarkGhostHunter\RutUtils\RutHelper;
 
-$rut = Rut::rectify('18765432');
+$rut = RutHelper::rectify('18765432');
 
 echo $rut->num; // "18765432"
 echo $rut->vd; // "7"
 ```
 
-> If you pass down a whole RUT, you may get a new RUT with an appended Verification Digit. Ensure you pass down only the RUT number. 
+> If you pass down a whole RUT, you may get a new RUT with an appended Verification Digit. Ensure you pass down only the RUT number.
 
 #### `isPerson`
 
-Checks if the RUT is between 0 and 50.000.000, which are usually used for normal people.
+Checks if the RUT below 50.000.000, which are usually used for normal people.
 
 ```php
 <?php
@@ -515,7 +525,7 @@ echo RutHelper::make('50000000-7')->isCompany(); // true
 
 #### `isEqual`
 
-Receives multiple RUTs and return true if all of them are equal, independently of how these are formatted, **even if these are invalid**.
+Returns if two or more RUTs are equal, independently of how these are formatted, **even if these are invalid**.
 
 ```php
 <?php
@@ -540,10 +550,9 @@ You can also use the `isEqual()` helper inside a Rut instance.
 use DarkGhostHunter\RutUtils\RutHelper;
 use Application\Models\User;
 
-echo Rut::make(User::getRutFromDatabase())->isEqual(
-    'thisisARut12343580-K', 
-    '12343580-k'
-); // true
+$rut = Rut::make(User::getRutFromDatabase());
+
+echo $rut->isEqual('thisisARut12343580-K', '12343580-k'); // true
 ```
 
 #### `getVd`
@@ -562,7 +571,7 @@ echo $vd; // 'K'
 
 #### `unpack`
 
-Takes an array and, if only one item was issued containing an array, this item contents will be returned.
+Takes an array and, if only one item was issued containing an array, this item contents will be returned to the application.
 
 ```php
 <?php
@@ -576,11 +585,11 @@ $unpacked = RutHelper::unpack([
 echo count($unpacked); // 3
 ```
 
-### Make Callbacks
+### Callbacks
 
 For convenience, you can register callbacks to be executed after you use `many()` and `manyOrThrow()`. For example, you may want to use this to manipulate how the Ruts are handled before these are returned.
 
-Register them using the `after()` static method. The callable receives the array of Ruts as the come, and **must return** the result.
+You can register a callback using the `after()` static method. The callable receives the array of RUTs as the come, and **must return** the result.
 
 ```php
 <?php
@@ -590,24 +599,27 @@ use DarkGhostHunter\RutUtils\RutHelper;
 
 Rut::after(function ($ruts) {
     
-    $persons = 0;
-    
-    foreach ($ruts as $rut) {
-        $persons += (int) RutHelper::isPerson($rut); 
-    }
-    
     return array_merge($ruts, [
-        'persons' => $persons,
-        'companies' => count($ruts) - $persons,
+        'count' => count($ruts),
     ]);
 });
+
+$ruts = Rut::many([
+    // ...
+]);
+
+var_dump($ruts);
+// array(100) [
+//    // ...
+//    'count' => 100,
+// ]
 ```
 
-If you register multiple callbacks, these will be executed in the order they were registered.
+> If you register multiple callbacks, these will be executed in the order they were registered.
 
 ### Serialization
 
-Sometimes you may want to store your Rut instance somewhere, or serialize it to JSON, or a string. In this package you're covered from all angles.
+Sometimes you may want to store your Rut instance somewhere, or serialize it to JSON, or a string. With this package you're covered from all angles.
 
 #### Serialize / Unserialize
 
@@ -623,7 +635,7 @@ $rut = Rut::make('22605071-k');
 echo serialize($rut); // C:28:"DarkGhostHunter\RutUtils\Rut":9:{106663092}
 ``` 
 
-This is pretty much heavily optimized for low storage and quick instancing. The rest will depend on your serialization engine.
+This is pretty much optimized for low storage and quick instancing. The rest will depend on your serialization engine.
 
 #### String  
 
@@ -633,7 +645,7 @@ There are multiple ways to set the format to use with a Rut instance when is ser
 * Basic: No thousand separator, only the hyphen.
 * Raw: No thousand separator nor hyphen.
 
-These can be set globally using the static methods, and as a per-instance basis using the dynamic calls available in itself.
+These can be set globally using the static methods, and as a per-instance basis using the dynamic calls available in the instance itself.
 
 ```php
 <?php
@@ -662,7 +674,7 @@ echo $rut->toRawString(); // "22605071K"
 
 #### JSON
 
-By default, when casting to JSON, the result is a string. You can change this to be an array of the number and verification digit using static methods or per-instance cases: 
+By default, when casting to JSON, the result is a string. You can change this to be an array of the number and verification digit using static methods for all instances or a per-instance case: 
 
 ```php
 <?php
@@ -690,7 +702,7 @@ echo json_encode($rut); // "22.605.071-K"
 
 ## Global helper
 
-In version 2.0, all helpers have been killed and now you have only one called `rut()`. It works as a proxy for `Rut::makeOr`, but accepts a default in case of invalid ruts. If no parameter is issued, an instance of the Rut Generator is returned.
+In version 2.0, all helpers have been killed and now you have only one called `rut()`. It works as a proxy for `Rut::make`, but accepts a default in case of invalid ruts. If no parameter is issued, an instance of the Rut Generator is returned.
 
 ```php
 <?php
