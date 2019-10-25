@@ -64,7 +64,11 @@ class RutHelper
     public static function validate(...$ruts)
     {
         foreach (static::unpack($ruts) as $rut) {
-            if (!static::validateRut($rut)) {
+            try {
+                if (!static::validateRut($rut)) {
+                    return false;
+                }
+            } catch (\Throwable $throwable) {
                 return false;
             }
         }
@@ -80,9 +84,12 @@ class RutHelper
     public static function validateStrict(...$ruts)
     {
         foreach (static::unpack($ruts) as $rut) {
-            if (is_string($rut)
-                && preg_match('/(\d){1,2}.\d{3}.\d{3}-[\dkK]/', $rut)
-                && static::validateRut($rut)) {
+            try {
+                if (!preg_match('/(\d){1,2}.\d{3}.\d{3}-[\dkK]/', $rut)
+                    || !static::validateRut($rut)) {
+                    return false;
+                }
+            } catch (\Throwable $throwable) {
                 return false;
             }
         }

@@ -10,7 +10,7 @@ use DarkGhostHunter\RutUtils\RutHelper;
 class RutHelperTest extends TestCase
 {
 
-    /** @var array  */
+    /** @var array */
     protected $ruts = [
         '84954616',
         247009094,
@@ -21,7 +21,7 @@ class RutHelperTest extends TestCase
         '143281450',
     ];
 
-    /** @var array  */
+    /** @var array */
     protected $invalidRuts = [
         '84984616',
         247009091,
@@ -29,7 +29,7 @@ class RutHelperTest extends TestCase
         13666578,
         '22605071J',
         '14379171K',
-        '14328145K'
+        '14328145K',
     ];
 
     protected $malformedRuts = [
@@ -85,7 +85,7 @@ class RutHelperTest extends TestCase
 
     public function testNullOnCleanedRut()
     {
-        $this->assertEquals([null,null], RutHelper::separateRut('this-is-no-a-rut'));
+        $this->assertEquals([null, null], RutHelper::separateRut('this-is-no-a-rut'));
     }
 
     public function testValidate()
@@ -130,6 +130,20 @@ class RutHelperTest extends TestCase
         }
     }
 
+    public function testDoesntValidateOnInvalidType()
+    {
+        $malformed = [
+            '8.495.461-6',
+            '24.700.909-4',
+            ['5.868.566-6'],
+            '13.666.578-2',
+            '22.605.071-k',
+            '14.379.170-K',
+        ];
+
+        $this->assertFalse(RutHelper::validate($malformed));
+    }
+
     public function testValidateStrict()
     {
         $ruts = [
@@ -155,6 +169,26 @@ class RutHelperTest extends TestCase
         }
     }
 
+    public function testDoesntValidateStrictWhenInvalidType()
+    {
+        $ruts = [
+            '8.495.461-6',
+            ['24.700.909-4'],
+            '5.868.566-6',
+            '13.666.578-2',
+            '14.379.170-K',
+        ];
+
+        $this->assertFalse(RutHelper::validateStrict($ruts));
+
+        $ruts = [
+            new Rut(8495461, '6'),
+            new Rut(13666578, '6'),
+        ];
+
+        $this->assertFalse(RutHelper::validateStrict($ruts));
+    }
+
     public function testAreTwoEqual()
     {
         $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4'));
@@ -170,11 +204,11 @@ class RutHelperTest extends TestCase
     public function testAreEqualWithSingleArray()
     {
         $this->assertTrue(RutHelper::isEqual([
-            247009094, '2470!!!###0909-4'
+            247009094, '2470!!!###0909-4',
         ]));
 
         $this->assertFalse(RutHelper::isEqual([
-            247009091, '2470!!!###0909-4'
+            247009091, '2470!!!###0909-4',
         ]));
     }
 
