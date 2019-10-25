@@ -1,114 +1,23 @@
 <?php
 
-use DarkGhostHunter\RutUtils\RutHelper;
+use DarkGhostHunter\RutUtils\Rut;
+use DarkGhostHunter\RutUtils\RutGenerator;
 
-if (!function_exists('is_rut')) {
+if (!function_exists('rut')) {
 
     /**
-     * Returns if a RUT or an array of RUTs are valid
+     * Returns a Rut instance or null, or the Rut Generator if there are no parameters
      *
-     * @param mixed ...$rut
-     * @return bool
+     * @param  mixed ...$rut
+     * @param  null $default
+     * @return \DarkGhostHunter\RutUtils\Rut|\DarkGhostHunter\RutUtils\RutGenerator
      */
-    function is_rut(...$rut)
+    function rut($rut = null, $default = null)
     {
-        return RutHelper::validate(...$rut);
+        if ($rut) {
+            return Rut::makeOr($rut, null, $default);
+        }
+
+        return new RutGenerator();
     }
 }
-
-if (!function_exists('is_rut_strict')) {
-
-    /**
-     * Returns if a RUT or an array of RUTs are strictly valid
-     *
-     * @param mixed ...$rut
-     * @return bool
-     */
-    function is_rut_strict(...$rut)
-    {
-        return RutHelper::validateStrict(...$rut);
-    }
-}
-
-if (!function_exists('is_rut_equal')) {
-
-    /**
-     * Return if two or more RUTs are equal
-     *
-     * @param array $ruts
-     * @return bool
-     */
-    function is_rut_equal(...$ruts)
-    {
-        return RutHelper::isEqual(...$ruts);
-    }
-}
-
-if (!function_exists('rut_filter')) {
-
-    /**
-     * Filter a given array of RUTs for the correct ones
-     *
-     * @param mixed ...$ruts
-     * @return array
-     */
-    function rut_filter(...$ruts) {
-        return RutHelper::filter(...$ruts);
-    }
-}
-
-if (!function_exists('rut_rectify')) {
-
-    /**
-     * Return a complete valid RUT from a number
-     *
-     * @param int $num
-     * @return \DarkGhostHunter\RutUtils\Rut
-     * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
-     */
-    function rut_rectify(int $num) {
-        return RutHelper::rectify($num);
-    }
-}
-
-if (!function_exists('is_rut_person')) {
-
-    /**
-     * Return if the given RUT is for a person
-     *
-     * @param string $rut
-     * @return bool
-     * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
-     */
-    function is_rut_person(string $rut) {
-        return RutHelper::isPerson($rut);
-    }
-}
-
-if (!function_exists('is_rut_company')) {
-
-    /**
-     * Return if the given RUT is for a company
-     *
-     * @param string $rut
-     * @return bool
-     * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
-     */
-    function is_rut_company(string $rut) {
-        return RutHelper::isCompany($rut);
-    }
-}
-
-if (!function_exists('rut_clean')) {
-
-    /**
-     * Cleans a RUT string
-     *
-     * @param string $rut
-     * @return string
-     */
-    function rut_clean(string $rut) {
-        return RutHelper::cleanRut($rut);
-    }
-}
-

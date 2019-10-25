@@ -59,6 +59,31 @@ class RutTest extends TestCase
         $this->assertEquals(null, $rut->vd);
     }
 
+    public function testMakeOr()
+    {
+        $rut = Rut::makeOr('10.666.309-2');
+        $this->assertInstanceOf(Rut::class, $rut);
+
+        $rut = Rut::makeOr(10666309, 2);
+        $this->assertInstanceOf(Rut::class, $rut);
+
+        $rut = Rut::makeOr('foo', 'bar');
+        $this->assertNull($rut);
+
+        $rut = Rut::makeOr('foo');
+        $this->assertNull($rut);
+
+        $rut = Rut::makeOr('foo', 'bar', function () {
+            return 'foo';
+        });
+        $this->assertEquals('foo', $rut);
+
+        $rut = Rut::makeOr('foo', null, function () {
+            return 'foo';
+        });
+        $this->assertEquals('foo', $rut);
+    }
+
     public function testMakeMany()
     {
         $ruts = Rut::makeMany([

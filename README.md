@@ -40,6 +40,7 @@ If you don't have Composer in your project, ~~you should be ashamed~~ just insta
 * [Helpers](#helpers)
 * [Make Callbacks](#make-callbacks)
 * [Serialization](#serialization)
+* [Global helper](#global-helper)
 
 ### What is a RUT or RUN?
 
@@ -191,7 +192,7 @@ You can do that using the `RutGenerator` class and use the methods to build how 
 
 use DarkGhostHunter\RutUtils\RutGenerator;
 
-$rut = RutGenerator::generate();
+$rut = RutGenerator::make()->generate();
 
 echo $rut; // "7.976.228-8" 
 ```
@@ -203,10 +204,10 @@ The default mode makes a RUT for normal people, which are bound between 1.000.00
 
 use DarkGhostHunter\RutUtils\RutGenerator;
 
-echo $rut = RutGenerator::asPerson()->generate();
+echo $rut = RutGenerator::make()->asPerson()->generate();
 // "15.846.327-K"
 
-echo $company = RutGenerator::asCompany()->generate();
+echo $company = RutGenerator::make()->asCompany()->generate();
 // "54.029.467-4"
 ```
 
@@ -217,8 +218,8 @@ Of course one may be not enough. You can add a parameter to these methods with t
 
 use DarkGhostHunter\RutUtils\RutGenerator;
 
-$peopleRuts = RutGenerator::asPerson()->generate(10);
-$companyRuts = RutGenerator::asCompany()->generate(35);
+$peopleRuts = RutGenerator::make()->asPerson()->generate(10);
+$companyRuts = RutGenerator::make()->asCompany()->generate(35);
 ```
 
 If for some reason you need them as raw strings instead of Rut instances, which is very good when generating thousands of them on strict memory usage, use the `asBasic()` and `asRaw()` method.
@@ -230,9 +231,9 @@ This will output the random strings like `22605071K`.
 
 use DarkGhostHunter\RutUtils\RutGenerator;
 
-$ruts = RutGenerator::asRaw()->generate(10);
-$peopleRuts = RutGenerator::asBasic()->generate(10);
-$companyRuts = RutGenerator::asStrict()->generate(35);
+$ruts = RutGenerator::make()->asRaw()->generate(10);
+$peopleRuts = RutGenerator::make()->asBasic()->generate(10);
+$companyRuts = RutGenerator::make()->asStrict()->generate(35);
 ```
 
 #### Generating random unique RUTs
@@ -244,8 +245,8 @@ If you need to create millions of RUTs without the risk of having them duplicate
 
 use DarkGhostHunter\RutUtils\RutGenerator;
 
-$peopleRuts = RutGenerator::asPerson()->unique()->generate(100000);
-$companyRuts = RutGenerator::asCompany()->unique()->generate(100000);
+$peopleRuts = RutGenerator::make()->asPerson()->unique()->generate(100000);
+$companyRuts = RutGenerator::make()->asCompany()->unique()->generate(100000);
 ```
 
 This may be handy for occasions when you need to generate a high number of RUTs.
@@ -267,7 +268,7 @@ $users = [
 
 $seeder = function ($user) {
     return array_merge($user, [
-        'rut' => RutGenerator::generateStatic()
+        'rut' => RutGenerator::make()->generateStatic()
     ]);
 };
 
@@ -601,7 +602,27 @@ echo json_encode($rut); // {"num":"22605071","vd":"K"}
 $rut->jsonAsString();
 
 echo json_encode($rut); // "22.605.071-K"
-``` 
+```
+
+## Global helper
+
+In version 2.0, all helpers have been deprecated and now you have only one called `rut()`. It works as a proxy for `Rut::makeOr`, but accepts a default in case of invalid ruts. If no parameter is issued, an instance of the Rut Generator is returned.
+
+```php
+<?php
+
+$rut = rut('10.666.309-2');
+
+echo $rut; // '10.666.309-2';
+
+$rut = rut('something invalid', 'use this!');
+
+echo $rut; // 'use this!'
+
+$rut = rut()->generate();
+
+echo $rut; // '20.750.456-4'
+```
 
 ## License
 

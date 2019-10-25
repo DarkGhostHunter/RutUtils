@@ -240,4 +240,14 @@ class RutGenerator
 
         return array_values($array);
     }
+
+    /**
+     * Creates a new Rut Generator instance
+     *
+     * @return static
+     */
+    public static function make()
+    {
+        return new static;
+    }
 }

@@ -40,18 +40,40 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      *
      * @var array
      */
-    protected $rut;
+    protected $rut = [
+        'num' => null,
+        'vd' => null
+    ];
 
     /**
      * Makes one Rut instance. No validation is done.
      *
-     * @param $rut
+     * @param  mixed $rut
      * @param  null $vd
-     * @return \DarkGhostHunter\RutUtils\Rut
+     * @return null|\DarkGhostHunter\RutUtils\Rut
      */
     public static function make($rut, $vd = null)
     {
         return new static($rut, $vd);
+    }
+
+    /**
+     * Makes a RUT or returns a default value when its invalid
+     *
+     * @param  int|string $rut
+     * @param  null|string|int $vd
+     * @param  null|mixed|callable $default
+     * @return null|\DarkGhostHunter\RutUtils\Rut
+     */
+    public static function makeOr($rut, $vd = null, $default = null)
+    {
+        $rut = static::make($rut, $vd);
+
+        if ($rut->isValid()) {
+            return $rut;
+        }
+
+        return is_callable($default) ? $default() : $default;
     }
 
     /**

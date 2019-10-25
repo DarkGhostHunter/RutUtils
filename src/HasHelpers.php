@@ -11,7 +11,9 @@ trait HasHelpers
      */
     public function isValid()
     {
-        return RutHelper::validate($this);
+        return ($this->rut['num'] !== null)
+            && ($this->rut['vd'] !== null)
+            && RutHelper::validate($this);
     }
 
     /**
