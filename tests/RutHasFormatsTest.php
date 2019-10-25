@@ -11,14 +11,14 @@ class RutHasFormatsTest extends TestCase
     {
         $this->assertEquals('strict', Rut::getGlobalFormat());
 
-        $rut = new Rut;
+        $rut = new Rut(18300252, 'k');
 
         $this->assertEquals('strict', $rut->getFormat());
     }
 
     public function testChangesGlobalFormats()
     {
-        $rut = new Rut('18.300.252-k');
+        $rut = new Rut(18300252, 'k');
 
         $this->assertEquals('strict', Rut::getGlobalFormat());
         $this->assertEquals('18.300.252-K', (string)$rut);
@@ -38,7 +38,7 @@ class RutHasFormatsTest extends TestCase
 
     public function testChangesInstanceFormat()
     {
-        $rut = new Rut('18.300.252-k');
+        $rut = new Rut(18300252, 'k');
         $this->assertEquals('strict', $rut->getFormat());
 
         $rut->setFormat('raw');

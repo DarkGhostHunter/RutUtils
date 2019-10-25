@@ -16,6 +16,11 @@ class RutGeneratorTest extends TestCase
         $this->generator = new RutGenerator();
     }
 
+    public function testMake()
+    {
+        $this->assertInstanceOf(RutGenerator::class, RutGenerator::make());
+    }
+
     public function testGenerateOne()
     {
         $rut = $this->generator->generate(1);

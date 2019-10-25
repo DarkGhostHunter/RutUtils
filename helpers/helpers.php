@@ -14,10 +14,8 @@ if (!function_exists('rut')) {
      */
     function rut($rut = null, $default = null)
     {
-        if ($rut) {
-            return Rut::makeOr($rut, null, $default);
-        }
-
-        return new RutGenerator();
+        return $rut
+            ? Rut::makeOr($rut, null, $default)
+            : new RutGenerator();
     }
 }

@@ -11,9 +11,7 @@ trait HasHelpers
      */
     public function isValid()
     {
-        return ($this->rut['num'] !== null)
-            && ($this->rut['vd'] !== null)
-            && RutHelper::validate($this);
+        return $this->rut['num'] && $this->rut['vd'] && RutHelper::validate($this);
     }
 
     /**
@@ -52,8 +50,15 @@ trait HasHelpers
      * @param  mixed ...$ruts
      * @return bool
      */
-    public function isEqualTo(...$ruts)
+    public function isEqual(...$ruts)
     {
-        return RutHelper::isEqual(...RutHelper::unpack($ruts) + [$this]);
+        $ruts = array_filter(array_merge(RutHelper::unpack($ruts), [$this]));
+
+        // Bail if after filtering RUTs we end up with only this instance.
+        if (count($ruts) < 2) {
+            return false;
+        }
+
+        return RutHelper::isEqual($ruts);
     }
 }

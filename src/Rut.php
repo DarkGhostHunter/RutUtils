@@ -2,6 +2,7 @@
 
 namespace DarkGhostHunter\RutUtils;
 
+use TypeError;
 use ArrayAccess;
 use Serializable;
 use JsonSerializable;
@@ -25,7 +26,9 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
         HasCallbacks;
 
     public const FORMAT_STRICT = 'strict';
+
     public const FORMAT_BASIC = 'basic';
+
     public const FORMAT_RAW = 'raw';
 
     /**
@@ -40,135 +43,30 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      *
      * @var array
      */
-    protected $rut = [
-        'num' => null,
-        'vd' => null
-    ];
-
-    /**
-     * Makes one Rut instance. No validation is done.
-     *
-     * @param  mixed $rut
-     * @param  null $vd
-     * @return null|\DarkGhostHunter\RutUtils\Rut
-     */
-    public static function make($rut, $vd = null)
-    {
-        return new static($rut, $vd);
-    }
-
-    /**
-     * Makes a RUT or returns a default value when its invalid
-     *
-     * @param  int|string $rut
-     * @param  null|string|int $vd
-     * @param  null|mixed|callable $default
-     * @return null|\DarkGhostHunter\RutUtils\Rut
-     */
-    public static function makeOr($rut, $vd = null, $default = null)
-    {
-        $rut = static::make($rut, $vd);
-
-        if ($rut->isValid()) {
-            return $rut;
-        }
-
-        return is_callable($default) ? $default() : $default;
-    }
-
-    /**
-     * Makes many Rut instances from the given array
-     *
-     * @param  array $ruts
-     * @return array
-     */
-    public static function makeMany(...$ruts)
-    {
-        $ruts = RutHelper::unpack($ruts);
-
-        foreach ($ruts as $key => $value) {
-            [$num, $vd] = is_array($value) ? array_pad($value, 2, null) : [$value, null];
-            $ruts[$key] = static::make($num, $vd);
-        }
-
-        foreach (static::$after as $callback) {
-            $ruts = $callback($ruts);
-        }
-
-        return $ruts;
-    }
-
-    /**
-     * Makes only Valid Ruts, discarding the wrong ones.
-     *
-     * @param  array $ruts
-     * @return array
-     */
-    public static function makeValid(...$ruts)
-    {
-        $ruts = RutHelper::unpack($ruts);
-
-        foreach ($ruts as $key => $value) {
-            [$num, $vd] = is_array($value) ? array_pad($value, 2, null) : [$value, null];
-            $ruts[$key] = static::make($num, $vd);
-        }
-
-        $ruts = RutHelper::filter($ruts);
-
-        foreach (static::$after as $callback) {
-            $ruts = $callback($ruts);
-        }
-
-        return $ruts;
-    }
-
-    /**
-     * Creates only valid RUTs, or throw an exception
-     *
-     * @param  array $ruts
-     * @return array|mixed
-     * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
-     */
-    public static function makeOrThrow(...$ruts)
-    {
-        $ruts = RutHelper::unpack($ruts);
-
-        $expected = count($ruts);
-
-        $ruts = RutHelper::filter(static::makeMany($ruts));
-
-        if (($actual = count($ruts)) < $expected) {
-            throw new InvalidRutException($ruts, $expected, $actual);
-        }
-
-        return $ruts;
-    }
+    protected $rut;
 
     /**
      * Creates a new Rut instance.
      *
-     * @param integer $num
-     * @param string $vd
+     * @param  integer $num
+     * @param  string $vd
      */
-    public function __construct($num = null, string $vd = null)
+    public function __construct(int $num, string $vd)
     {
-        if ($num) {
-            $this->putRut($num, $vd);
-        }
+        $this->rut = [
+            'num' => $num,
+            'vd'  => $this->case($vd),
+        ];
     }
 
     /**
-     * Adds a RUT string to the instance, or replaces the one existing.
+     * Clones this Rut instance into a new instance
      *
-     * @param string|int $num
-     * @param  null $vd
-     * @return $this
+     * @return \DarkGhostHunter\RutUtils\Rut
      */
-    public function putRut($num, $vd = null)
+    public function clone()
     {
-        [$this->rut['num'], $this->rut['vd']] = RutHelper::separateRut($num . $vd);
-
-        return $this;
+        return clone $this;
     }
 
     /**
@@ -178,7 +76,121 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      */
     public function getRut()
     {
-        return $this->rut ?? $this->rut = ['num' => null, 'vd' => null];
+        return $this->rut;
+    }
+
+    /**
+     * Makes one Rut instance, or null if its malformed. No validation is done.
+     *
+     * @param  mixed $rut
+     * @param  null $vd
+     * @return null|\DarkGhostHunter\RutUtils\Rut
+     */
+    public static function make($rut, $vd = null)
+    {
+        if ($rut instanceof static) {
+            return $rut;
+        }
+
+        if (is_array($rut)) {
+            [$rut, $vd] = array_pad($rut, 2, null);
+        }
+        elseif ($vd === null) {
+            [$rut, $vd] = RutHelper::separateRut($rut);
+        }
+
+        try {
+            return new static($rut, $vd);
+        } catch (TypeError $error) {
+            return null;
+        }
+    }
+
+    /**
+     * Makes a RUT or returns a default value when its malformed or invalid
+     *
+     * @param  int|string $rut
+     * @param  null|string|int|callable $vd
+     * @param  null|mixed|callable $default
+     * @return null|mixed|\DarkGhostHunter\RutUtils\Rut
+     */
+    public static function makeOr($rut, $vd = null, $default = null)
+    {
+        $rut = static::make($rut, $vd);
+
+        if ($rut && $rut->isValid()) {
+            return $rut;
+        }
+
+        if (is_callable($vd)) {
+            return $vd();
+        }
+
+        return is_callable($default) ? $default() : $default;
+    }
+
+    /**
+     * Makes a single Rut instance, or throws an exception when its malformed or invalid
+     *
+     * @param  string|int $rut
+     * @param  null $vd
+     * @return \DarkGhostHunter\RutUtils\Rut
+     * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
+     */
+    public static function makeOrThrow($rut, $vd = null)
+    {
+        $rut = self::make($rut, $vd);
+
+        if ($rut && $rut->isValid()) {
+            return $rut;
+        }
+
+        throw new InvalidRutException($rut);
+    }
+
+    /**
+     * Makes many Rut instances from a given array, discarding malformed ones.
+     *
+     * @param  array $ruts
+     * @return array
+     */
+    public static function many(...$ruts)
+    {
+        $ruts = RutHelper::unpack($ruts);
+
+        foreach ($ruts as $key => $value) {
+            $ruts[$key] = static::make($value);
+        }
+
+        $ruts = array_filter($ruts);
+
+        foreach (static::$after as $callback) {
+            $ruts = $callback($ruts);
+        }
+
+        return $ruts;
+    }
+
+    /**
+     * Creates only valid RUTs, or throw an exception if at least one is malformed or invalid
+     *
+     * @param  array $ruts
+     * @return array|mixed
+     * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
+     */
+    public static function manyOrThrow(...$ruts)
+    {
+        $ruts = RutHelper::unpack($ruts);
+
+        foreach ($ruts as $key => $value) {
+            $ruts[$key] = static::makeOrThrow($value);
+        }
+
+        foreach (static::$after as $callback) {
+            $ruts = $callback($ruts);
+        }
+
+        return $ruts;
     }
 
     /**
@@ -326,7 +338,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
 
         $this->rut = [
             'num' => (int)$num,
-            'vd' => is_numeric($vd) ? (int)$vd : $vd,
+            'vd'  => $vd,
         ];
     }
 }

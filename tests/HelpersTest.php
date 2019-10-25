@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use DarkGhostHunter\RutUtils\Rut;
 use DarkGhostHunter\RutUtils\RutGenerator;
 
-class HelpersTests extends TestCase
+class HelpersTest extends TestCase
 {
     public function testReturnsRut()
     {

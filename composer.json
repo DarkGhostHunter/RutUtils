@@ -21,7 +21,7 @@
         "DarkGhostHunter\\RutUtils\\" : "src"
       },
       "files": [
-        "helpers/helpers.php"
+        "src/helpers.php"
       ]
     },
     "autoload-dev": {

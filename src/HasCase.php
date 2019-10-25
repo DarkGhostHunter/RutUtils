@@ -59,6 +59,17 @@ trait HasCase
     }
 
     /**
+     * Case the verification digit to uppercase or lowercase
+     *
+     * @param  string $vd
+     * @return string
+     */
+    protected function case(string $vd)
+    {
+        return $this->shouldUppercase() ? strtoupper($vd) : strtolower($vd);
+    }
+
+    /**
      * Set all RUT to use lowercase `K`
      *
      * @return \DarkGhostHunter\RutUtils\Rut

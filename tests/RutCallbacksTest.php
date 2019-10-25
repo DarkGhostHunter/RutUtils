@@ -41,7 +41,7 @@ class RutCallbacksTest extends TestCase
 
         Rut::after($foo);
 
-        $this->assertEquals(3, Rut::makeMany('18300252K', '18300252K'));
+        $this->assertEquals(3, Rut::many('18300252K', '18300252K'));
         $this->assertEquals(['foo'], $order);
     }
 
@@ -68,13 +68,13 @@ class RutCallbacksTest extends TestCase
         Rut::after($bar);
         Rut::after($qux);
 
-
-        $this->assertEquals(15, Rut::makeMany('18300252K', '18300252K'));
+        $this->assertEquals(15, Rut::many('18300252K', '18300252K'));
         $this->assertEquals(['foo', 'bar', 'qux'], $order);
 
+        $order = [];
 
-        $this->assertEquals(15, Rut::makeValid('18300252K', '18300252K'));
-        $this->assertEquals(['foo', 'bar', 'qux', 'foo', 'bar', 'qux'], $order);
+        $this->assertEquals(15, Rut::manyOrThrow('18300252K', '18300252K'));
+        $this->assertEquals(['foo', 'bar', 'qux'], $order);
     }
 
     public function testFlushesCallbacks()
@@ -97,7 +97,7 @@ class RutCallbacksTest extends TestCase
         Rut::flushAfterCallbacks();
 
         $this->assertEmpty(Rut::getAfterCallbacks());
-        $this->assertIsArray(Rut::makeMany('18300252K'));
+        $this->assertIsArray(Rut::many('18300252K'));
     }
 
     public function testCallsWithoutCallbacks()
@@ -107,7 +107,14 @@ class RutCallbacksTest extends TestCase
         });
 
         $expected = Rut::withoutCallbacks(function () {
-            return Rut::makeMany('18300252K', '18300252K');
+            return Rut::many('18300252K', '18300252K');
+        });
+
+        $this->assertIsArray($expected);
+        $this->assertCount(2, $expected);
+
+        $expected = Rut::withoutCallbacks(function () {
+            return Rut::manyOrThrow('18300252K', '18300252K');
         });
 
         $this->assertIsArray($expected);
