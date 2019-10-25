@@ -83,10 +83,11 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      * Makes one Rut instance, or null if its malformed. No validation is done.
      *
      * @param  mixed $rut
-     * @param  null $vd
-     * @return null|\DarkGhostHunter\RutUtils\Rut
+     * @param  null|int|string|callable $vd
+     * @param  null|callable|mixed $default
+     * @return null|mixed|\DarkGhostHunter\RutUtils\Rut
      */
-    public static function make($rut, $vd = null)
+    public static function make($rut, $vd = null, $default = null)
     {
         if ($rut instanceof static) {
             return $rut;
@@ -100,23 +101,10 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
         }
 
         try {
-            return new static($rut, $vd);
+            $rut = new static($rut, $vd);
         } catch (TypeError $error) {
-            return null;
+            $rut = null;
         }
-    }
-
-    /**
-     * Makes a RUT or returns a default value when its malformed or invalid
-     *
-     * @param  int|string $rut
-     * @param  null|string|int|callable $vd
-     * @param  null|mixed|callable $default
-     * @return null|mixed|\DarkGhostHunter\RutUtils\Rut
-     */
-    public static function makeOr($rut, $vd = null, $default = null)
-    {
-        $rut = static::make($rut, $vd);
 
         if ($rut && $rut->isValid()) {
             return $rut;
@@ -141,7 +129,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
     {
         $rut = self::make($rut, $vd);
 
-        if ($rut && $rut->isValid()) {
+        if ($rut) {
             return $rut;
         }
 

@@ -43,7 +43,6 @@ class RutTest extends TestCase
         $this->assertEquals(1, $rut->vd);
 
         $rut = Rut::make('foo', 'bar');
-
         $this->assertNull($rut);
 
         $rut = Rut::make('1d2a9w0!3@9g1=9-1');
@@ -51,44 +50,29 @@ class RutTest extends TestCase
 
         $this->assertEquals(12903919, $rut->num);
         $this->assertEquals(1, $rut->vd);
+
+        $rut = Rut::make('foo', 'bar', function () {
+            return 'foo';
+        });
+        $this->assertEquals('foo', $rut);
+
+        $rut = Rut::make('foo', null, function () {
+            return 'foo';
+        });
+        $this->assertEquals('foo', $rut);
+
+        $rut = Rut::make('foo', function () {
+            return 'foo';
+        });
+        $this->assertEquals('foo', $rut);
     }
 
     public function testClone()
     {
-        $rutA = Rut::makeOr('10.666.309-2');
+        $rutA = Rut::make('10.666.309-2');
         $rutB = $rutA->clone();
 
         $this->assertEquals($rutA, $rutB);
-    }
-
-    public function testMakeOr()
-    {
-        $rut = Rut::makeOr('10.666.309-2');
-        $this->assertInstanceOf(Rut::class, $rut);
-
-        $rut = Rut::makeOr(10666309, 2);
-        $this->assertInstanceOf(Rut::class, $rut);
-
-        $rut = Rut::makeOr('foo', 'bar');
-        $this->assertNull($rut);
-
-        $rut = Rut::makeOr('foo');
-        $this->assertNull($rut);
-
-        $rut = Rut::makeOr('foo', 'bar', function () {
-            return 'foo';
-        });
-        $this->assertEquals('foo', $rut);
-
-        $rut = Rut::makeOr('foo', null, function () {
-            return 'foo';
-        });
-        $this->assertEquals('foo', $rut);
-
-        $rut = Rut::makeOr('foo', function () {
-            return 'foo';
-        });
-        $this->assertEquals('foo', $rut);
     }
 
     public function testMakeMany()

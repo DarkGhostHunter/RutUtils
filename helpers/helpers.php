@@ -15,7 +15,7 @@ if (!function_exists('rut')) {
     function rut($rut = null, $default = null)
     {
         return $rut
-            ? Rut::makeOr($rut, null, $default)
+            ? Rut::make($rut, null, $default)
             : new RutGenerator();
     }
 }

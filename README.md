@@ -56,7 +56,7 @@ The RUT its comprised of a random Number, like `18.765.432`, and a Verification 
 
 This identification information is a safe bet for chilean companies. It allows to attach one account to one individual (person or company), and can be cross-referenced with other data the user may have available through other services.
 
-> What's the difference between RUTs and RUNs? RUT are meant for identifying a person or company taxes, RUNs are to identify single persons. But in all case, they're practically the same.
+> What's the difference between RUTs and RUNs? RUT are meant for identifying a person or company taxes, RUNs are to identify single persons. For both cases, **they're practically the same**.
 
 ### Creating a RUT
 
@@ -113,7 +113,7 @@ Creating this object in these ways **won't check if the RUT is valid**. Don't wo
 
 #### Creating a valid Rut
 
-Let's say your user is issuing a RUT in your application, and you need to validate it before proceeding. You can easily create a RUT or return something else with the `makeOr()`, which accepts a value or callable when the RUT is malformed or invalid.
+Let's say your user is issuing a RUT in your application, and you need to validate it before proceeding. You can easily create a RUT or return something else with the `makeOr()`, which accepts a value or callable that will be returned when the RUT is malformed or invalid.
 
 ```php
 <?php 
