@@ -62,7 +62,9 @@ This identification information is a safe bet for chilean companies. It allows t
 
 There are two ways to create a RUT: manual instancing, which is strict, and using the `make()` static helper.
 
-Using manual instantiation allows you to create a RUT by the given number and verification digit quickly.
+#### Manual instancing
+
+Using manual instantiation allows you to create a RUT by the given number and verification digit quickly. For example, with data coming from a Database or any other trustful source.
 
 ```php
 <?php 
@@ -95,7 +97,7 @@ $rutC = Rut::make('asdwdasd14.32.814.5-0');
 
 The static helper will automatically clean the string and parse the number and verification digit for you, so you don't have to.
 
-If the resulting Rut is empty, `null` will be returned instead of a Rut instance, which you can use to quickly set flow control in your code.
+If the resulting Rut is malformed or invalid, `null` will be returned instead of a Rut instance, which you can use to quickly set flow control in your code.
 
 ```php
 <?php 
@@ -104,16 +106,12 @@ use DarkGhostHunter\RutUtils\Rut;
 
 $malformed = Rut::make('not-a-rut');
 
-if (is_null($malformed)) {
-    echo 'This Rut is malformed!';
+if (!$malformed) {
+    echo 'This RUT is bad!';
 }
 ```
 
-Creating this object in these ways **won't check if the RUT is valid**. Don't worry, we will see more ways to create RUTs in the next sections.
-
-#### Creating a valid Rut
-
-Let's say your user is issuing a RUT in your application, and you need to validate it before proceeding. You can easily create a RUT or return something else with the `makeOr()`, which accepts a value or callable that will be returned when the RUT is malformed or invalid.
+The `make()` method accepts a value or callable that will be returned when the RUT is malformed or invalid.
 
 ```php
 <?php 
@@ -121,17 +119,14 @@ Let's say your user is issuing a RUT in your application, and you need to valida
 use DarkGhostHunter\RutUtils\Rut;
 
 $validA = Rut::makeOr('14328145', 0, 'this is valid');
-
 echo $validA; // "14.328.145-0"
 
 $validB = Rut::makeOr('14.328.145-0', function () {
     return 'also valid'; 
 });
-
 echo $validA; // "14.328.145-0"
 
 $invalid = Rut::makeOr('18.765.432-1', null, 'this is invalid');
-
 echo $invalid; // "this is invalid"
 ```
 

@@ -2,7 +2,6 @@
 
 namespace DarkGhostHunter\RutUtils;
 
-use TypeError;
 use ArrayAccess;
 use Serializable;
 use JsonSerializable;
@@ -93,23 +92,29 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
             return $rut;
         }
 
+        // If the user is issuing an array of arguments rather than each
+        // separately, we will just unpack the array to the arguments.
+        // Otherwise, it should be a string and we will separate it.
         if (is_array($rut)) {
-            [$rut, $vd] = array_pad($rut, 2, null);
+            [$rut, $vd, $default] = array_pad($rut, 3, null);
         }
         elseif ($vd === null) {
             [$rut, $vd] = RutHelper::separateRut($rut);
         }
 
-        try {
+        // Create a new instance of a Rut if both parameters are correct.
+        if (is_int($rut) && $vd !== null) {
             $rut = new static($rut, $vd);
-        } catch (TypeError $error) {
-            $rut = null;
+
+            if ($rut->isValid()) {
+                return $rut;
+            }
+
         }
 
-        if ($rut && $rut->isValid()) {
-            return $rut;
-        }
-
+        // We'll call the default values/callables since the instance does
+        // not exists, since its null. We will try the second parameter
+        // first, and if its not callable, then we'll try the third.
         if (is_callable($vd)) {
             return $vd();
         }
@@ -127,9 +132,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      */
     public static function makeOrThrow($rut, $vd = null)
     {
-        $rut = self::make($rut, $vd);
-
-        if ($rut) {
+        if ($rut = self::make($rut, $vd)) {
             return $rut;
         }
 
