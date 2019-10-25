@@ -13,10 +13,10 @@ class InvalidRutException extends Exception
      * @param $actual
      * @param  array $ruts
      */
-    public function __construct($expected = 'all', $actual = 'not all', array $ruts)
+    public function __construct(array $ruts, $expected = 'all', $actual = 'not all')
     {
         $message = $expected === 1
-            ? "The RUT [$ruts[0]] is invalid."
+            ? 'The RUT is invalid.'
             : "Processed $expected RUTs but $actual are valid.";
 
         parent::__construct($message);

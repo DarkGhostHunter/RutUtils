@@ -47,6 +47,7 @@ trait HasCallbacks
      * Executes a closure without before and after callbacks
      *
      * @param  \Closure $closure
+     * @return mixed
      */
     public static function withoutCallbacks(Closure $closure)
     {
@@ -54,8 +55,10 @@ trait HasCallbacks
 
         static::flushAfterCallbacks();
 
-        $closure();
+        $result = $closure();
 
         static::$after = $after;
+
+        return $result;
     }
 }

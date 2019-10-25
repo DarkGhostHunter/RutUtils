@@ -33,7 +33,13 @@ If you don't have Composer in your project, ~~you should be ashamed~~ just insta
 
 ## Usage
 
-[TOC levels=3]: Table of contents
+* [What is a RUT or RUN?](#what-is-a-rut-or-run)
+* [Creating a RUT](#creating-a-rut)
+* [Retrieving a RUT](#retrieving-a-rut)
+* [Generating RUTs](#generating-ruts)
+* [Helpers](#helpers)
+* [Make Callbacks](#make-callbacks)
+* [Serialization](#serialization)
 
 ### What is a RUT or RUN?
 
@@ -163,18 +169,16 @@ use DarkGhostHunter\RutUtils\Rut;
 
 $rut = Rut::make('12343580-K');
 
-$rut->uppercase();
-
-echo Rut::make('12343580-K')->vd; // "k"
-
 $rut->lowercase();
 
-echo Rut::make('12343580-K')->vd; // "K"
+echo $rut->vd; // "K"
+
+$rut->uppercase();
+
+echo $rut->vd; // "k"
 ```
 
 This may come in handy when your source of truth manages lowercase `k` and you need strict comparison or storing mechanisms.
-
-> The object string will parse the RUT on input, not on output. 
 
 ### Generating RUTs
 
@@ -488,7 +492,7 @@ $unpacked = RutHelper::unpack([
 echo count($unpacked); // 3
 ```
 
-## Make Callbacks
+### Make Callbacks
 
 For convenience, you can register callbacks to be executed after you use `makeMany()`, `makeValid()` and `makeOrThrow()`. For example, you may want to use this to manipulate how the Ruts are handled before these are returned.
 
@@ -517,11 +521,11 @@ Rut::after(function ($ruts) {
 
 If you register multiple callbacks, these will be executed in the order they were registered.
 
-## Serialization
+### Serialization
 
 Sometimes you may want to store your Rut instance somewhere, or serialize it to JSON, or a string. In any way, you're covered.
 
-### Serialize / Unserialize
+#### Serialize / Unserialize
 
 By default, a Rut instance is serialized as a raw string, which is latter reconstructed fast by just dividing the string into number and verification digit:
 ```php
@@ -536,7 +540,7 @@ echo serialize($rut); // C:28:"DarkGhostHunter\RutUtils\Rut":9:{106663092}
 
 This is pretty much heavily optimized for low storage and quick instancing. The rest will depend on your serialization engine.
 
-### String  
+#### String  
 
 There are multiple ways to set the format to use with a Rut instance when is serialized as a string:
 
@@ -571,7 +575,7 @@ echo $rut->toBasicString(); // "22605071-K"
 echo $rut->toRawString(); // "22605071K"
 ```
 
-### JSON
+#### JSON
 
 By default, when casting to JSON, the result is a string. You can change this to be an array of the number and verification digit using static methods or per-instance cases: 
 

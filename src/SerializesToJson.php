@@ -9,7 +9,7 @@ trait SerializesToJson
      *
      * @var boolean
      */
-    protected static $globalJsonFromArray = true;
+    protected static $globalJsonFromArray = false;
 
     /**
      * The format when transforming to an array for this Rut instance
@@ -67,7 +67,7 @@ trait SerializesToJson
      *
      * @return null|bool
      */
-    protected function shouldArray()
+    public function shouldJsonAsArray()
     {
         return $this->jsonAsArray !== null ? $this->jsonAsArray : self::$globalJsonFromArray;
     }
@@ -79,6 +79,6 @@ trait SerializesToJson
      */
     public function jsonSerialize()
     {
-        return $this->shouldArray() ? (string)$this : $this->toArray();
+        return $this->shouldJsonAsArray() ? $this->toArray() : (string)$this;
     }
 }

@@ -5,13 +5,6 @@ namespace DarkGhostHunter\RutUtils;
 class RutHelper
 {
     /**
-     * Where to draw the line between person and company RUTs
-     *
-     * @var int
-     */
-    public const COMPANY_RUT_BASE = 50000000;
-
-    /**
      * Cleans a RUT string
      *
      * @param string $rut
@@ -128,7 +121,7 @@ class RutHelper
     {
         [$num, $vd] = $vd ? [$rut, $vd] : static::separateRut($rut);
 
-        return $num && $vd && strtoupper($vd) === (string)static::getVd($num);
+        return $num && $vd !== null && strtoupper($vd) === (string)static::getVd($num);
     }
 
     /**
@@ -167,7 +160,7 @@ class RutHelper
     {
         [$num] = $vd ? [$rut, $vd] : static::separateRut($rut);
 
-        return $num && $num < static::COMPANY_RUT_BASE && $num > 1000000;
+        return $num && $num < Rut::COMPANY_RUT_BASE && $num > 1000000;
     }
 
     /**
@@ -194,7 +187,7 @@ class RutHelper
 
         // Clean every value
         foreach ($ruts as $key => $value) {
-            $ruts[$key] = static::cleanRut($value);
+            $ruts[$key] = static::cleanRut(is_array($value) ? implode('', $value) : (string)$value);
         }
 
         // To see if all the ruts are equal we will remove the duplicates values.
@@ -213,9 +206,10 @@ class RutHelper
      */
     public static function unpack(array $ruts)
     {
-        if (is_array($ruts[0]) && count($ruts) === 1) {
+        if (count($ruts) === 1 && is_array($ruts[0])) {
             $ruts = $ruts[0];
         }
+
 
         return $ruts;
     }

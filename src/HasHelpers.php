@@ -2,19 +2,8 @@
 
 namespace DarkGhostHunter\RutUtils;
 
-trait HasHelperMethods
+trait HasHelpers
 {
-    /**
-     * Separate a RUT string into an array with the number and verification digit
-     *
-     * @param string $rut
-     * @return array
-     */
-    protected function separateRut(string $rut)
-    {
-        return RutHelper::separateRut($rut, static::$globalUppercase);
-    }
-
     /**
      * Returns if the present RUT is valid
      *
@@ -58,11 +47,11 @@ trait HasHelperMethods
     /**
      * Return if the RUT is equal to another RUT
      *
-     * @param string $rut
+     * @param  mixed ...$ruts
      * @return bool
      */
-    public function isEqualTo(string $rut)
+    public function isEqualTo(...$ruts)
     {
-        return RutHelper::isEqual($this, $rut);
+        return RutHelper::isEqual(...RutHelper::unpack($ruts) + [$this]);
     }
 }

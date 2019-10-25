@@ -12,20 +12,28 @@ use DarkGhostHunter\RutUtils\Exceptions\InvalidRutException;
  *
  * @package DarkGhostHunter\RutUtils
  *
- * @property-read int $num
- * @property-read string|int $vd
+ * @property-read null|int $num
+ * @property-read null|int|string $vd
  *
  */
 class Rut implements ArrayAccess, JsonSerializable, Serializable
 {
     use SerializesToJson,
-        HasHelperMethods,
+        HasHelpers,
         HasFormats,
+        HasCase,
         HasCallbacks;
 
     public const FORMAT_STRICT = 'strict';
     public const FORMAT_BASIC = 'basic';
     public const FORMAT_RAW = 'raw';
+
+    /**
+     * Where to draw the line between person and company RUTs
+     *
+     * @const int
+     */
+    public const COMPANY_RUT_BASE = 50000000;
 
     /**
      * RUT Composition
@@ -108,7 +116,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
         $ruts = RutHelper::filter(static::makeMany($ruts));
 
         if (($actual = count($ruts)) < $expected) {
-            throw new InvalidRutException($expected, $actual, $ruts);
+            throw new InvalidRutException($ruts, $expected, $actual);
         }
 
         return $ruts;
@@ -136,9 +144,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      */
     public function putRut($num, $vd = null)
     {
-        [$this->rut['num'], $this->rut['vd']] = $vd
-            ? [$num, $this->shouldUppercase() ? strtoupper($vd) : $vd]
-            : RutHelper::separateRut($num, static::$globalUppercase);
+        [$this->rut['num'], $this->rut['vd']] = RutHelper::separateRut($num . $vd);
 
         return $this;
     }
@@ -150,7 +156,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      */
     public function getRut()
     {
-        return $this->rut;
+        return $this->rut ?? $this->rut = ['num' => null, 'vd' => null];
     }
 
     /**
@@ -161,6 +167,12 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      */
     public function __get($name)
     {
+        if ($name === 'vd' && $this->rut['vd']) {
+            return $this->shouldUppercase()
+                ? strtoupper($this->rut['vd'])
+                : strtolower($this->rut['vd']);
+        }
+
         return $this->rut[$name] ?? null;
     }
 
@@ -204,7 +216,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      */
     public function offsetExists($offset)
     {
-        return isset($this->rut[$offset]);
+        return $this->__isset($offset);
     }
 
     /**
@@ -215,7 +227,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      */
     public function offsetGet($offset)
     {
-        return $this->rut[$offset] ?? null;
+        return $this->__get($offset);
     }
 
     /**

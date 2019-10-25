@@ -4,12 +4,6 @@ namespace DarkGhostHunter\RutUtils;
 
 trait HasFormats
 {
-    /**
-     * Global Uppercase for all Rut instances.
-     *
-     * @var bool
-     */
-    protected static $globalUppercase = true;
 
     /**
      * Global Format for all Rut instances.
@@ -17,13 +11,6 @@ trait HasFormats
      * @var string
      */
     protected static $globalFormat = 'strict';
-
-    /**
-     * If `K` should be treated as uppercase.
-     *
-     * @var bool|null
-     */
-    protected $uppercase;
 
     /**
      * Should have thousand separator on string serialization.
@@ -37,39 +24,9 @@ trait HasFormats
      *
      * @return string
      */
-    public static function getGlobalUppercase()
-    {
-        return self::$globalUppercase;
-    }
-
-    /**
-     * Return the global string format
-     *
-     * @return string
-     */
     public static function getGlobalFormat()
     {
         return self::$globalFormat;
-    }
-
-    /**
-     * Set all RUT to use uppercase `K`
-     *
-     * @return void
-     */
-    public static function allUppercase()
-    {
-        self::$globalUppercase = true;
-    }
-
-    /**
-     * Set all RUT to use lowercase `K`
-     *
-     * @return void
-     */
-    public static function allLowercase()
-    {
-        self::$globalUppercase = false;
     }
 
     /**
@@ -107,43 +64,9 @@ trait HasFormats
      *
      * @return bool
      */
-    protected function shouldUppercase()
-    {
-        return $this->uppercase !== null ? $this->uppercase : self::$globalUppercase;
-    }
-
-    /**
-     * Return the current uppercase configuration for this Rut instance.
-     *
-     * @return bool
-     */
     public function getFormat()
     {
         return $this->format ?? static::$globalFormat;
-    }
-
-    /**
-     * Set all RUT to use uppercase `K`
-     *
-     * @return \DarkGhostHunter\RutUtils\Rut
-     */
-    public function uppercase()
-    {
-        $this->uppercase = true;
-
-        return $this;
-    }
-
-    /**
-     * Set all RUT to use lowercase `K`
-     *
-     * @return \DarkGhostHunter\RutUtils\Rut
-     */
-    public function lowercase()
-    {
-        $this->uppercase = false;
-
-        return $this;
     }
 
     /**
@@ -164,7 +87,10 @@ trait HasFormats
      */
     public function toStrictString()
     {
-        return number_format((int)$this->rut['num'], 0, ',', '.') . '-' . $this->rut['vd'];
+        $num = number_format((int)$this->rut['num'], 0, ',', '.');
+        $vd = $this->shouldUppercase() ? strtoupper($this->rut['vd']) : strtolower($this->rut['vd']);
+
+        return $num . '-' .$vd;
     }
 
     /**
@@ -175,7 +101,9 @@ trait HasFormats
      */
     public function toBasicString()
     {
-        return (int)$this->rut['num'] . '-' . $this->rut['vd'];
+        $vd = $this->shouldUppercase() ? strtoupper($this->rut['vd']) : strtolower($this->rut['vd']);
+
+        return (int)$this->rut['num'] . '-' . $vd;
     }
 
     /**
@@ -186,7 +114,9 @@ trait HasFormats
      */
     public function toRawString()
     {
-        return (int)$this->rut['num'] . $this->rut['vd'];
+        $vd = $this->shouldUppercase() ? strtoupper($this->rut['vd']) : strtolower($this->rut['vd']);
+
+        return (int)$this->rut['num'] . $vd;
     }
 
     /**

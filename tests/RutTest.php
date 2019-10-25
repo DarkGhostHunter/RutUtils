@@ -55,22 +55,8 @@ class RutTest extends TestCase
 
         $rut = Rut::make('foo', 'bar');
 
-        $this->assertEquals('foo', $rut->num);
-        $this->assertEquals('BAR', $rut->vd);
-    }
-
-    public function testMakeFailsWhenNoArgument()
-    {
-        $this->expectException(\ArgumentCountError::class);
-
-        Rut::make();
-    }
-
-    public function testMakeFailsWhenFirstArgumentNotString()
-    {
-        $this->expectException(\TypeError::class);
-
-        Rut::make(null);
+        $this->assertEquals(null, $rut->num);
+        $this->assertEquals(null, $rut->vd);
     }
 
     public function testMakeMany()
@@ -102,8 +88,8 @@ class RutTest extends TestCase
         $this->assertEquals(null, $ruts[4]->num);
         $this->assertEquals(null, $ruts[4]->vd);
 
-        $this->assertEquals('foo', $ruts[5]->num);
-        $this->assertEquals('BAR', $ruts[5]->vd);
+        $this->assertEquals(null, $ruts[5]->num);
+        $this->assertEquals(null, $ruts[5]->vd);
     }
 
     public function testMakeManyUnpacks()
@@ -135,8 +121,8 @@ class RutTest extends TestCase
         $this->assertEquals(null, $ruts[4]->num);
         $this->assertEquals(null, $ruts[4]->vd);
 
-        $this->assertEquals('foo', $ruts[5]->num);
-        $this->assertEquals('BAR', $ruts[5]->vd);
+        $this->assertEquals(null, $ruts[5]->num);
+        $this->assertEquals(null, $ruts[5]->vd);
     }
 
     public function testMakeManyReturnsEmptyArrayWhenNoArguments()
@@ -183,13 +169,6 @@ class RutTest extends TestCase
         $this->assertEmpty($ruts);
     }
 
-    public function testMakeValidFailsWhenInvalidType()
-    {
-        $this->expectException(\TypeError::class);
-
-        Rut::makeValid(187654321);
-    }
-
     public function testMakeOrThrow()
     {
         $ruts = Rut::makeOrThrow([
@@ -215,6 +194,15 @@ class RutTest extends TestCase
         $this->assertEquals(1, $ruts[3]->vd);
     }
 
+    public function testMakeOrThrowFailsWhenInvalidRut()
+    {
+        $this->expectException(InvalidRutException::class);
+
+        Rut::makeOrThrow([
+            ['foo'],
+        ]);
+    }
+
     public function testMakeOrThrowFailsWhenInvalidRuts()
     {
         $this->expectException(InvalidRutException::class);
@@ -237,6 +225,16 @@ class RutTest extends TestCase
 
         $this->assertEquals(18765432, $rut->num);
         $this->assertEquals(1, $rut->vd);
+    }
+
+    public function testGetRut()
+    {
+        $rut = new Rut;
+
+        $this->assertEquals(['num' => null, 'vd' => null], $rut->getRut());
+
+        $rut->putRut(18765432, 1);
+        $this->assertEquals(['num' => 18765432, 'vd' => 1], $rut->getRut());
     }
 
     public function testGetAndSet()

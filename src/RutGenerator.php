@@ -7,6 +7,20 @@ class RutGenerator
     use BuildsGenerator;
 
     /**
+     * Minimum constraint to generate RUTs
+     *
+     * @const int
+     */
+    public const MINIMUM_NUMBER = 1000000;
+
+    /**
+     * Maximum constraint to generate RUTs
+     *
+     * @const int
+     */
+    public const MAXIMUM_NUMBER = 100000000;
+
+    /**
      * Static array for handling static generation
      *
      * @var array
@@ -65,9 +79,23 @@ class RutGenerator
     {
         do {
             $result = $this->generate();
-        } while (!in_array($result, self::$static, true));
+        } while (in_array($result, static::$static, true));
+
+        static::$static[] = $result;
 
         return $result;
+    }
+
+    /**
+     * Flushes the static Ruts saved for generation
+     *
+     * @return $this
+     */
+    public function flushStatic()
+    {
+        static::$static = [];
+
+        return $this;
     }
 
     /**
@@ -104,15 +132,9 @@ class RutGenerator
      */
     protected function prepareMinMax()
     {
-        $min = 1000000;
-        $max = RutHelper::COMPANY_RUT_BASE;
-
-        if (!$this->person) {
-            $min = $max;
-            $max = 100000000;
-        }
-
-        return [$min, $max];
+        return $this->person
+            ? [ static::MINIMUM_NUMBER, Rut::COMPANY_RUT_BASE ]
+            : [ Rut::COMPANY_RUT_BASE, static::MAXIMUM_NUMBER];
     }
 
     /**
@@ -217,17 +239,5 @@ class RutGenerator
         }
 
         return array_values($array);
-    }
-
-    /**
-     * Dynamically handle static calls to a new object instance
-     *
-     * @param $name
-     * @param $arguments
-     * @return \DarkGhostHunter\RutUtils\RutGenerator
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        return (new static)->{$name}(...$arguments);
     }
 }
