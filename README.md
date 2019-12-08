@@ -118,15 +118,15 @@ The `make()` method accepts a value or callable that will be returned when the R
 
 use DarkGhostHunter\RutUtils\Rut;
 
-$validA = Rut::makeOr('14328145', 0, 'this is valid');
+$validA = Rut::make('14328145', 0, 'this is valid');
 echo $validA; // "14.328.145-0"
 
-$validB = Rut::makeOr('14.328.145-0', function () {
+$validB = Rut::make('14.328.145-0', function () {
     return 'also valid'; 
 });
 echo $validA; // "14.328.145-0"
 
-$invalid = Rut::makeOr('18.765.432-1', null, 'this is invalid');
+$invalid = Rut::make('18.765.432-1', null, 'this is invalid');
 echo $invalid; // "this is invalid"
 ```
 

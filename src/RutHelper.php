@@ -7,8 +7,8 @@ class RutHelper
     /**
      * Cleans a RUT string
      *
-     * @param string $rut
-     * @param bool $uppercase
+     * @param  string $rut
+     * @param  bool $uppercase
      * @return string
      */
     public static function cleanRut(string $rut, bool $uppercase = true)
@@ -16,8 +16,8 @@ class RutHelper
         // Filter the RUT string and return only numbers and verification digit.
         $filtered = preg_filter('/(?!\d|k)./i', '', $rut) ?? $rut;
 
-        // If the filtered RUT is not empty and over the 6 characters, we're good.
-        if (empty($filtered)) {
+        // If the filtered RUT is not over 6 characters, bail out. Who needs 99.999-9 anyway?
+        if (strlen($filtered) < 7) {
             return null;
         }
 
@@ -25,10 +25,10 @@ class RutHelper
     }
 
     /**
-     * Cleans a RUT from invalid characters and separates it
+     * Cleans a RUT from invalid characters and separates it into an array
      *
-     * @param string $rut
-     * @param bool $uppercase
+     * @param  string $rut
+     * @param  bool $uppercase
      * @return array
      */
     public static function separateRut(string $rut, bool $uppercase = true)
@@ -45,9 +45,9 @@ class RutHelper
     }
 
     /**
-     * Separate a RUT string into an array
+     * Separate a RUT string into an array by its last character
      *
-     * @param string $string
+     * @param  string $string
      * @return array
      */
     protected static function explodeByLastChar(string $string)
@@ -58,40 +58,44 @@ class RutHelper
     /**
      * Returns if all the RUTs in an array are valid
      *
-     * @param array $ruts
+     * @param  array $ruts
      * @return bool
      */
     public static function validate(...$ruts)
     {
-        foreach (static::unpack($ruts) as $rut) {
-            try {
-                if (!static::validateRut($rut)) {
+        // Unpack the ruts and do a loop. Each of these will be pass validation
+        try {
+            foreach (static::unpack($ruts) as $rut) {
+                if (! static::validateRut($rut)) {
                     return false;
                 }
-            } catch (\Throwable $throwable) {
-                return false;
             }
         }
+        catch (\Throwable $throwable) {
+            return false;
+        }
+
         return true;
     }
 
     /**
      * Returns if all the RUTs in an array are strictly formatted and valid
      *
-     * @param mixed ...$ruts
+     * @param  mixed ...$ruts
      * @return bool
      */
     public static function validateStrict(...$ruts)
     {
-        foreach (static::unpack($ruts) as $rut) {
-            try {
-                if (!preg_match('/(\d){1,2}.\d{3}.\d{3}-[\dkK]/', $rut)
-                    || !static::validateRut($rut)) {
+        try {
+            foreach (static::unpack($ruts) as $rut) {
+                if (! preg_match('/(\d){1,2}.\d{3}.\d{3}-[\dkK]/', $rut)
+                    || ! static::validateRut($rut)) {
                     return false;
                 }
-            } catch (\Throwable $throwable) {
-                return false;
             }
+        }
+        catch (\Throwable $throwable) {
+            return false;
         }
 
         return true;
@@ -101,7 +105,7 @@ class RutHelper
      * Validates a RUT string
      *
      * @param  int|string $rut
-     * @param  string|null $vd
+     * @param  null|string $vd
      * @return bool
      */
     protected static function validateRut($rut, $vd = null)
@@ -114,13 +118,14 @@ class RutHelper
     /**
      * Filter a given array of RUTs for the correct ones.
      *
-     * @param mixed ...$ruts
+     * @param  mixed ...$ruts
      * @return array
      */
     public static function filter(...$ruts)
     {
         return array_filter(static::unpack($ruts), function ($rut) {
             [$num, $vd] = is_array($rut) ? $rut : [$rut, null];
+
             return static::validateRut($num, $vd);
         });
     }
@@ -128,7 +133,7 @@ class RutHelper
     /**
      * Return a complete RUT instance from a single number
      *
-     * @param int $num
+     * @param  int $num
      * @return Rut
      */
     public static function rectify(int $num)
@@ -159,13 +164,13 @@ class RutHelper
      */
     public static function isCompany(string $rut, $vd = null)
     {
-        return !static::isPerson($rut, $vd);
+        return ! static::isPerson($rut, $vd);
     }
 
     /**
      * Return if two or more RUTs are equal
      *
-     * @param array $ruts
+     * @param  array $ruts
      * @return bool
      */
     public static function isEqual(...$ruts)
@@ -182,21 +187,21 @@ class RutHelper
         // means that all the ruts are equal. Otherwise, they're not equal.
         $ruts = array_unique($ruts);
 
-        return count($ruts) === 1 && !empty($ruts[0]);
+        return count($ruts) === 1 && ! empty($ruts[0]);
     }
 
     /**
-     * Unpacks an array of Ruts
+     * Unpacks an array of RUTs if it's a single multidimensional array
      *
      * @param $ruts
      * @return array|mixed
      */
     public static function unpack(array $ruts)
     {
+        // If the array contains only one entry, and that entry is an array: unpack.
         if (count($ruts) === 1 && is_array($ruts[0])) {
             $ruts = $ruts[0];
         }
-
 
         return $ruts;
     }
@@ -204,9 +209,9 @@ class RutHelper
     /**
      * Get the Verification Digit from a given number
      *
-     * @internal This is the main logic to create a valid rut from a number.
-     * @param int $num
+     * @param  int $num
      * @return int|string
+     * @internal This is the main logic to create a valid rut from a number.
      */
     public static function getVd(int $num)
     {
