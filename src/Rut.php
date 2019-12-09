@@ -103,7 +103,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
         }
 
         // Create a new instance of a Rut if both parameters are correct.
-        if (is_int($rut) && $vd !== null) {
+        if ($rut && $vd !== null) {
             $rut = new static($rut, $vd);
 
             if ($rut->isValid()) {
