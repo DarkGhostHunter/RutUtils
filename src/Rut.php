@@ -137,7 +137,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      * Makes many Rut instances from a given array, discarding malformed ones.
      *
      * @param  array $ruts
-     * @return array
+     * @return array|mixed
      */
     public static function many(...$ruts)
     {
