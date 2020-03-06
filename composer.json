@@ -2,6 +2,8 @@
     "name": "darkghosthunter/rut-utils",
     "description": "A complete library for handling chilean RUTs and RUNs.",
     "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Italo Baeza C.",
@@ -13,8 +15,8 @@
       "ext-json": "*"
     },
     "require-dev": {
-      "phpunit/phpunit": "~8.0",
-      "mockery/mockery": "1.2.*"
+      "phpunit/phpunit": "^9.0",
+      "mockery/mockery": "^1.2.0"
     },
     "autoload": {
       "psr-4": {
