@@ -11,24 +11,28 @@
         }
     ],
     "require": {
-      "php": "^7.2",
-      "ext-json": "*"
+        "php": "^7.2",
+        "ext-json": "*"
     },
     "require-dev": {
-      "phpunit/phpunit": "^9.0",
-      "mockery/mockery": "^1.2.0"
+        "phpunit/phpunit": "^9.0",
+        "mockery/mockery": "^1.2.0"
     },
     "autoload": {
-      "psr-4": {
-        "DarkGhostHunter\\RutUtils\\" : "src"
-      },
-      "files": [
-        "helpers/helpers.php"
-      ]
+        "psr-4": {
+            "DarkGhostHunter\\RutUtils\\": "src"
+        },
+        "files": [
+            "helpers/helpers.php"
+        ]
     },
     "autoload-dev": {
-      "psr-0": {
-        "Tests\\": "tests/"
-      }
-    }
+        "psr-0": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
 }
