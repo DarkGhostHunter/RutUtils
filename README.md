@@ -17,7 +17,7 @@ While this package works as a fire-and-forget utility for your project, ensure y
 
 ## Requirements
 
-This package only needs PHP 7.2 and later.
+This package only needs PHP 7.3 and later.
 
 It may work on older versions, but it will only support active PHP releases. 
 
@@ -124,7 +124,7 @@ echo $validA; // "14.328.145-0"
 $validB = Rut::make('14.328.145-0', function () {
     return 'also valid'; 
 });
-echo $validA; // "14.328.145-0"
+echo $validB; // "14.328.145-0"
 
 $invalid = Rut::make('18.765.432-1', null, 'this is invalid');
 echo $invalid; // "this is invalid"
@@ -232,7 +232,7 @@ This may come in handy when your source of truth manages lowercase `k` and you n
 
 ### Generating RUTs
 
-Sometimes is handy to create a RUT on the fly, usually for testing purposes when seeding and mocking.
+Sometimes it's handy to create a RUT on the fly, usually for testing purposes when seeding and mocking.
 
 You can do that using the `RutGenerator` class and use the methods to build how you want to generate your RUTs. The methods are fluent, meaning, you can chain them until you use the `generate()` method.
 
@@ -299,7 +299,7 @@ $ruts = RutGenerator::make()->withoutDuplicates()->generate(100000);
 
 ##### Unique results between calls
 
-You may have a custom seeder in your application that may call  `generate()` every single time, increasing risk of collisions with each generation. Fear not! Using the `generateStatic()` you are guaranteed to get unique results during a single application lifecycle.
+You may have a custom seeder in your application that may call `generate()` every single time, increasing risk of collisions with each generation. Fear not! Using the `generateStatic()` you are guaranteed to get unique results during a single application lifecycle.
 
 ```php
 <?php
@@ -332,16 +332,16 @@ RutGenerator::make()->flushStatic();
 
 You can manipulate and check strings quickly using the `RutHelper` class, which contains a wide variety of handy static methods you can use.
 
-* [`cleanRut`](#cleanRut)
-* [`separateRut`](#separateRut)
+* [`cleanRut`](#cleanrut)
+* [`separateRut`](#separaterut)
 * [`validate`](#validate)
-* [`validateStrict`](#validateStrict)
+* [`validateStrict`](#validatestrict)
 * [`filter`](#filter)
 * [`rectify`](#rectify)
-* [`isPerson`](#isPerson)
-* [`isCompany`](#isCompany)
-* [`isEqual`](#isEqual)
-* [`getVd`](#getVd)
+* [`isPerson`](#isperson)
+* [`isCompany`](#iscompany)
+* [`isEqual`](#isequal)
+* [`getVd`](#getvd)
 
 #### `cleanRut`
 
@@ -547,7 +547,7 @@ You can also use the `isEqual()` helper inside a Rut instance.
 ```php
 <?php
 
-use DarkGhostHunter\RutUtils\RutHelper;
+use DarkGhostHunter\RutUtils\Rut;
 use Application\Models\User;
 
 $rut = Rut::make(User::getRutFromDatabase());
@@ -623,7 +623,7 @@ Sometimes you may want to store your Rut instance somewhere, or serialize it to 
 
 #### Serialize / Unserialize
 
-By default, a Rut instance is serialized as a raw string, which is latter reconstructed quickly by just dividing the string into number and verification digit:
+By default, a Rut instance is serialized as a raw string, which is latter reconstructed quickly by just dividing the string into the number and verification digit:
 
 ```php
 <?php
@@ -641,7 +641,7 @@ This is pretty much optimized for low storage and quick instancing. The rest wil
 
 There are multiple ways to set the format to use with a Rut instance when is serialized as a string:
 
-* Strict: Default option. Serializes with thousand separator and hyphen.
+* Strict: Default option. Serializes with a thousand separator and hyphen.
 * Basic: No thousand separator, only the hyphen.
 * Raw: No thousand separator nor hyphen.
 
@@ -674,7 +674,7 @@ echo $rut->toRawString(); // "22605071K"
 
 #### JSON
 
-By default, when casting to JSON, the result is a string. You can change this to be an array of the number and verification digit using static methods for all instances or a per-instance case: 
+By default, when casting to JSON, the result is a string. You can change this to be an array of the number and verification digit using static methods for all instances, or a per-instance case: 
 
 ```php
 <?php
