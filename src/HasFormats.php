@@ -10,21 +10,21 @@ trait HasFormats
      *
      * @var string
      */
-    protected static $globalFormat = 'strict';
+    protected static string $globalFormat = 'strict';
 
     /**
      * Should have thousand separator on string serialization.
      *
      * @var string|null
      */
-    protected $format;
+    protected ?string $format;
 
     /**
      * Return the global string format
      *
      * @return string
      */
-    public static function getGlobalFormat()
+    public static function getGlobalFormat(): string
     {
         return self::$globalFormat;
     }
@@ -34,7 +34,7 @@ trait HasFormats
      *
      * @return void
      */
-    public static function allFormatStrict()
+    public static function allFormatStrict(): void
     {
         static::$globalFormat = self::FORMAT_STRICT;
     }
@@ -44,7 +44,7 @@ trait HasFormats
      *
      * @return void
      */
-    public static function allFormatBasic()
+    public static function allFormatBasic(): void
     {
         static::$globalFormat = self::FORMAT_BASIC;
     }
@@ -54,7 +54,7 @@ trait HasFormats
      *
      * @return void
      */
-    public static function allFormatRaw()
+    public static function allFormatRaw(): void
     {
         static::$globalFormat = self::FORMAT_RAW;
     }
@@ -62,9 +62,9 @@ trait HasFormats
     /**
      * Return the current uppercase configuration for this Rut instance.
      *
-     * @return bool
+     * @return string
      */
-    public function getFormat()
+    public function getFormat(): string
     {
         return $this->format ?? static::$globalFormat;
     }
@@ -74,7 +74,7 @@ trait HasFormats
      *
      * @param  string $format
      */
-    public function setFormat(string $format)
+    public function setFormat(string $format): void
     {
         $this->format = $format;
     }
@@ -85,7 +85,7 @@ trait HasFormats
      * @return string
      * @example 18.765.432-1
      */
-    public function toStrictString()
+    public function toStrictString(): string
     {
         $num = number_format((int)$this->rut['num'], 0, ',', '.');
         $vd = $this->shouldUppercase() ? strtoupper($this->rut['vd']) : strtolower($this->rut['vd']);
@@ -99,7 +99,7 @@ trait HasFormats
      * @return string
      * @example 18765432-1
      */
-    public function toBasicString()
+    public function toBasicString(): string
     {
         $vd = $this->shouldUppercase() ? strtoupper($this->rut['vd']) : strtolower($this->rut['vd']);
 
@@ -112,7 +112,7 @@ trait HasFormats
      * @return string
      * @example 187654321
      */
-    public function toRawString()
+    public function toRawString(): string
     {
         $vd = $this->shouldUppercase() ? strtoupper($this->rut['vd']) : strtolower($this->rut['vd']);
 
@@ -124,7 +124,7 @@ trait HasFormats
      *
      * @return string
      */
-    public function toFormattedString()
+    public function toFormattedString(): string
     {
         switch ($this->format ?? static::$globalFormat) {
             case static::FORMAT_STRICT:

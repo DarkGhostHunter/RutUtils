@@ -5,45 +5,45 @@ namespace DarkGhostHunter\RutUtils;
 trait SerializesToJson
 {
     /**
-     * How to transform to an array
+     * How to transform to an array.
      *
      * @var boolean
      */
-    protected static $globalJsonFromArray = false;
+    protected static bool $globalJsonFromArray = false;
 
     /**
-     * The format when transforming to an array for this Rut instance
+     * The format when transforming to an array for this Rut instance.
      *
      * @var boolean|null
      */
-    protected $jsonAsArray;
+    protected ?bool $jsonAsArray;
 
     /**
-     * Sets the format for the array
+     * Sets the format for the array.
      *
      * @return void
      */
-    public static function allJsonAsArray()
+    public static function allJsonAsArray(): void
     {
         static::$globalJsonFromArray = true;
     }
 
     /**
-     * Sets the JSON format to an array
+     * Sets the JSON format to an array.
      *
      * @return void
      */
-    public static function allJsonAsString()
+    public static function allJsonAsString(): void
     {
         static::$globalJsonFromArray = false;
     }
 
     /**
-     * Forces this instance to
+     * Forces this instance to transform into a JSON array.
      *
      * @return $this
      */
-    public function jsonAsArray()
+    public function jsonAsArray(): Rut
     {
         $this->jsonAsArray = true;
 
@@ -51,11 +51,11 @@ trait SerializesToJson
     }
 
     /**
-     * Forces this instance to
+     * Forces this instance to transform as a JSON single string.
      *
      * @return $this
      */
-    public function jsonAsString()
+    public function jsonAsString(): Rut
     {
         $this->jsonAsArray = false;
 
@@ -67,9 +67,9 @@ trait SerializesToJson
      *
      * @return null|bool
      */
-    public function shouldJsonAsArray()
+    public function shouldJsonAsArray(): ?bool
     {
-        return $this->jsonAsArray !== null ? $this->jsonAsArray : self::$globalJsonFromArray;
+        return $this->jsonAsArray ?? static::$globalJsonFromArray;
     }
 
     /**

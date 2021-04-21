@@ -163,9 +163,10 @@ class RutGeneratorTest extends TestCase
     public function testWithoutDuplicates()
     {
         $this->generator = new class extends RutGenerator {
-            protected function performGenerate(int $iterations)
+            protected function performGenerate(int $iterations): array
             {
                 if ($iterations < 5) return ['four', 'five'];
+
                 return ['one', 'one', 'two', 'two', 'three',];
             }
         };
@@ -179,7 +180,7 @@ class RutGeneratorTest extends TestCase
     public function testNotUnique()
     {
         $this->generator = new class extends RutGenerator {
-            protected function performGenerate(int $iterations)
+            protected function performGenerate(int $iterations): array
             {
                 return ['one', 'one', 'two', 'two', 'three'];
             }
