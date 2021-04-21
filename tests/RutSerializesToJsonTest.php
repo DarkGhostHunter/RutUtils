@@ -1,9 +1,9 @@
 <?php
 
-namespace Test;
+namespace Tests;
 
-use PHPUnit\Framework\TestCase;
 use DarkGhostHunter\RutUtils\Rut;
+use PHPUnit\Framework\TestCase;
 
 class RutSerializesToJsonTest extends TestCase
 {
@@ -11,8 +11,8 @@ class RutSerializesToJsonTest extends TestCase
     {
         $rut = new Rut(18300252, 'k');
 
-        $this->assertFalse($rut->shouldJsonAsArray());
-        $this->assertEquals('"18.300.252-K"', $rut->toJson());
+        static::assertFalse($rut->shouldJsonAsArray());
+        static::assertEquals('"18.300.252-K"', $rut->toJson());
     }
 
     public function testSerializesAllJson()
@@ -23,13 +23,13 @@ class RutSerializesToJsonTest extends TestCase
 
         Rut::allJsonAsArray();
 
-        $this->assertJson($rut->toJson());
-        $this->assertEquals('{"num":18300252,"vd":"K"}', $rut->toJson());
+        static::assertJson($rut->toJson());
+        static::assertEquals('{"num":18300252,"vd":"K"}', $rut->toJson());
 
         Rut::allJsonAsString();
 
-        $this->assertJson($rut->toJson());
-        $this->assertEquals('"18.300.252-K"', $rut->toJson());
+        static::assertJson($rut->toJson());
+        static::assertEquals('"18.300.252-K"', $rut->toJson());
     }
 
     public function testSerializesJson()
@@ -40,12 +40,12 @@ class RutSerializesToJsonTest extends TestCase
 
         $rut->jsonAsArray();
 
-        $this->assertJson($rut->toJson());
-        $this->assertEquals('{"num":18300252,"vd":"K"}', $rut->toJson());
+        static::assertJson($rut->toJson());
+        static::assertEquals('{"num":18300252,"vd":"K"}', $rut->toJson());
 
         $rut->jsonAsString();
 
-        $this->assertJson($rut->toJson());
-        $this->assertEquals('"18.300.252-K"', $rut->toJson());
+        static::assertJson($rut->toJson());
+        static::assertEquals('"18.300.252-K"', $rut->toJson());
     }
 }

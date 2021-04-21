@@ -9,7 +9,7 @@ trait HasHelpers
      *
      * @return bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return RutHelper::validate($this);
     }
@@ -19,7 +19,7 @@ trait HasHelpers
      *
      * @return bool
      */
-    public function isInvalid()
+    public function isInvalid(): bool
     {
         return ! $this->isValid();
     }
@@ -29,7 +29,7 @@ trait HasHelpers
      *
      * @return bool
      */
-    public function isPerson()
+    public function isPerson(): bool
     {
         return RutHelper::isPerson($this);
     }
@@ -39,7 +39,7 @@ trait HasHelpers
      *
      * @return bool
      */
-    public function isCompany()
+    public function isCompany(): bool
     {
         return !$this->isPerson();
     }
@@ -50,7 +50,7 @@ trait HasHelpers
      * @param  mixed ...$ruts
      * @return bool
      */
-    public function isEqual(...$ruts)
+    public function isEqual(...$ruts): bool
     {
         $ruts = array_filter(array_merge(RutHelper::unpack($ruts), [$this]));
 

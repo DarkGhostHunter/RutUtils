@@ -2,24 +2,24 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase;
 use DarkGhostHunter\RutUtils\Rut;
 use DarkGhostHunter\RutUtils\RutGenerator;
+use PHPUnit\Framework\TestCase;
 
 class HelpersTest extends TestCase
 {
     public function testReturnsRut()
     {
-        $this->assertInstanceOf(Rut::class, rut('10.666.309-2'));
+        static::assertInstanceOf(Rut::class, rut('10.666.309-2'));
     }
 
     public function testReturnsDefaultWhenInvalidRut()
     {
-        $this->assertTrue(rut('foo', true));
+        static::assertTrue(rut('foo', true));
     }
 
     public function testReturnsGeneratorWhenNoParameters()
     {
-        $this->assertInstanceOf(RutGenerator::class, rut());
+        static::assertInstanceOf(RutGenerator::class, rut());
     }
 }

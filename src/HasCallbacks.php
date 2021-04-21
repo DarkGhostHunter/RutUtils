@@ -11,7 +11,7 @@ trait HasCallbacks
      *
      * @var array
      */
-    protected static $after = [];
+    protected static array $after = [];
 
     /**
      * Register a callback to be executed after making many Ruts
@@ -28,7 +28,7 @@ trait HasCallbacks
      *
      * @return array
      */
-    public static function getAfterCallbacks()
+    public static function getAfterCallbacks(): array
     {
         return static::$after;
     }

@@ -2,14 +2,14 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase;
 use DarkGhostHunter\RutUtils\Rut;
+use PHPUnit\Framework\TestCase;
 
 class RutHasCaseTest extends TestCase
 {
     public function testDefaultGlobalUppercase()
     {
-        $this->assertTrue(Rut::getGlobalUppercase());
+        static::assertTrue(Rut::getGlobalUppercase());
     }
 
     public function testGlobalUppercase()
@@ -20,13 +20,13 @@ class RutHasCaseTest extends TestCase
 
         $rutB = new Rut('21644289', 'k');
 
-        $this->assertEquals('K', $rutA->vd);
-        $this->assertEquals('K', $rutA['vd']);
-        $this->assertEquals('K', $rutB->vd);
-        $this->assertEquals('K', $rutB['vd']);
+        static::assertEquals('K', $rutA->vd);
+        static::assertEquals('K', $rutA['vd']);
+        static::assertEquals('K', $rutB->vd);
+        static::assertEquals('K', $rutB['vd']);
 
-        $this->assertEquals('15.518.258-K', (string)$rutA);
-        $this->assertEquals('21.644.289-K', (string)$rutB);
+        static::assertEquals('15.518.258-K', (string)$rutA);
+        static::assertEquals('21.644.289-K', (string)$rutB);
     }
 
     public function testGlobalLowercase()
@@ -37,13 +37,13 @@ class RutHasCaseTest extends TestCase
 
         $rutB = new Rut('21644289', 'K');
 
-        $this->assertEquals('k', $rutA->vd);
-        $this->assertEquals('k', $rutA['vd']);
-        $this->assertEquals('k', $rutB->vd);
-        $this->assertEquals('k', $rutB['vd']);
+        static::assertEquals('k', $rutA->vd);
+        static::assertEquals('k', $rutA['vd']);
+        static::assertEquals('k', $rutB->vd);
+        static::assertEquals('k', $rutB['vd']);
 
-        $this->assertEquals('15.518.258-k', (string)$rutA);
-        $this->assertEquals('21.644.289-k', (string)$rutB);
+        static::assertEquals('15.518.258-k', (string)$rutA);
+        static::assertEquals('21.644.289-k', (string)$rutB);
     }
 
     public function testInstanceUppercase()
@@ -57,13 +57,13 @@ class RutHasCaseTest extends TestCase
         $rutA->uppercase();
         $rutB->uppercase();
 
-        $this->assertEquals('K', $rutA->vd);
-        $this->assertEquals('K', $rutA['vd']);
-        $this->assertEquals('K', $rutB->vd);
-        $this->assertEquals('K', $rutB['vd']);
+        static::assertEquals('K', $rutA->vd);
+        static::assertEquals('K', $rutA['vd']);
+        static::assertEquals('K', $rutB->vd);
+        static::assertEquals('K', $rutB['vd']);
 
-        $this->assertEquals('15.518.258-K', (string)$rutA);
-        $this->assertEquals('21.644.289-K', (string)$rutB);
+        static::assertEquals('15.518.258-K', (string)$rutA);
+        static::assertEquals('21.644.289-K', (string)$rutB);
     }
 
     public function testInstanceLowercase()
@@ -77,12 +77,12 @@ class RutHasCaseTest extends TestCase
         $rutA->lowercase();
         $rutB->lowercase();
 
-        $this->assertEquals('k', $rutA->vd);
-        $this->assertEquals('k', $rutA['vd']);
-        $this->assertEquals('k', $rutB->vd);
-        $this->assertEquals('k', $rutB['vd']);
+        static::assertEquals('k', $rutA->vd);
+        static::assertEquals('k', $rutA['vd']);
+        static::assertEquals('k', $rutB->vd);
+        static::assertEquals('k', $rutB['vd']);
 
-        $this->assertEquals('15.518.258-k', (string)$rutA);
-        $this->assertEquals('21.644.289-k', (string)$rutB);
+        static::assertEquals('15.518.258-k', (string)$rutA);
+        static::assertEquals('21.644.289-k', (string)$rutB);
     }
 }

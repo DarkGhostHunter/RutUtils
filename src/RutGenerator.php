@@ -25,28 +25,28 @@ class RutGenerator
      *
      * @var array
      */
-    protected static $static = [];
+    protected static array $static = [];
 
     /**
      * How many RUTs to generate.
      *
      * @var int
      */
-    protected $iterations = 1;
+    protected int $iterations = 1;
 
     /**
      * Random RUT floor.
      *
      * @var int
      */
-    protected $min;
+    protected int $min;
 
     /**
      * Random RUT ceiling.
      *
      * @var int
      */
-    protected $max;
+    protected int $max;
 
     /**
      * Generates a new random Rut object or an array of them.
@@ -91,7 +91,7 @@ class RutGenerator
      *
      * @return $this
      */
-    public function flushStatic()
+    public function flushStatic(): RutGenerator
     {
         static::$static = [];
 
@@ -104,7 +104,7 @@ class RutGenerator
      * @param int $iterations
      * @return array
      */
-    protected function performGenerate(int $iterations)
+    protected function performGenerate(int $iterations): array
     {
         switch ($this->output) {
             case Rut::FORMAT_RAW:
@@ -130,7 +130,7 @@ class RutGenerator
      *
      * @return array
      */
-    protected function prepareMinMax()
+    protected function prepareMinMax(): array
     {
         return $this->person
             ? [ static::MINIMUM_NUMBER, Rut::COMPANY_RUT_BASE ]
@@ -145,7 +145,7 @@ class RutGenerator
      * @param int $max
      * @return array
      */
-    protected function generateStrict(int $iterations, int $min, int $max)
+    protected function generateStrict(int $iterations, int $min, int $max): array
     {
         $array = [];
 
@@ -165,7 +165,7 @@ class RutGenerator
      * @param int $max
      * @return array
      */
-    protected function generateBasic(int $iterations, int $min, int $max)
+    protected function generateBasic(int $iterations, int $min, int $max): array
     {
         $array = [];
 
@@ -185,7 +185,7 @@ class RutGenerator
      * @param int $max
      * @return array
      */
-    protected function generateRaw(int $iterations, int $min, int $max)
+    protected function generateRaw(int $iterations, int $min, int $max): array
     {
         $array = [];
 
@@ -204,7 +204,7 @@ class RutGenerator
      * @param int $max
      * @return array
      */
-    protected function generateObjects(int $iterations, int $min, int $max)
+    protected function generateObjects(int $iterations, int $min, int $max): array
     {
         $array = [];
 
@@ -226,7 +226,7 @@ class RutGenerator
      * @param array $array
      * @return array
      */
-    protected function fillNonUniqueIterations(array &$array)
+    protected function fillNonUniqueIterations(array &$array): array
     {
         $array = array_unique($array, SORT_REGULAR);
 
@@ -246,7 +246,7 @@ class RutGenerator
      *
      * @return static
      */
-    public static function make()
+    public static function make(): RutGenerator
     {
         return new static;
     }

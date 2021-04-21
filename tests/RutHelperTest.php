@@ -2,10 +2,10 @@
 
 namespace Tests;
 
-use TypeError;
-use PHPUnit\Framework\TestCase;
 use DarkGhostHunter\RutUtils\Rut;
 use DarkGhostHunter\RutUtils\RutHelper;
+use PHPUnit\Framework\TestCase;
+use TypeError;
 
 class RutHelperTest extends TestCase
 {
@@ -44,25 +44,25 @@ class RutHelperTest extends TestCase
     public function testCleansRut()
     {
         foreach ($this->malformedRuts as $key => $rut) {
-            $this->assertEquals(strtolower($this->ruts[$key]), RutHelper::cleanRut($rut, false));
+            static::assertEquals(strtolower($this->ruts[$key]), RutHelper::cleanRut($rut, false));
         }
     }
 
     public function testNullOnEmptyCleanedRut()
     {
-        $this->assertNull(RutHelper::cleanRut('asdasdasdasd', false));
-        $this->assertNull(RutHelper::cleanRut('asdasdasdasd', true));
+        static::assertNull(RutHelper::cleanRut('asdasdasdasd', false));
+        static::assertNull(RutHelper::cleanRut('asdasdasdasd', true));
     }
 
     public function testSeparatesRut()
     {
         foreach ($this->ruts as $rut) {
 
-            $this->assertEquals(
+            static::assertEquals(
                 strtoupper(substr($rut, 0, -1)),
                 RutHelper::separateRut($rut)[0]
             );
-            $this->assertEquals(
+            static::assertEquals(
                 strtoupper(substr($rut, -1, 1)),
                 RutHelper::separateRut($rut)[1]
             );
@@ -72,11 +72,11 @@ class RutHelperTest extends TestCase
     public function testSeparatesMalformedRut()
     {
         foreach ($this->malformedRuts as $key => $rut) {
-            $this->assertEquals(
+            static::assertEquals(
                 strtoupper(substr($this->ruts[$key], 0, -1)),
                 RutHelper::separateRut($rut)[0]
             );
-            $this->assertEquals(
+            static::assertEquals(
                 strtoupper(substr($this->ruts[$key], -1, 1)),
                 RutHelper::separateRut($rut)[1]
             );
@@ -85,32 +85,32 @@ class RutHelperTest extends TestCase
 
     public function testNullOnCleanedRut()
     {
-        $this->assertEquals([null, null], RutHelper::separateRut('this-is-no-a-rut'));
+        static::assertEquals([null, null], RutHelper::separateRut('this-is-no-a-rut'));
     }
 
     public function testValidate()
     {
-        $this->assertTrue(RutHelper::validate($this->ruts));
+        static::assertTrue(RutHelper::validate($this->ruts));
 
         foreach ($this->ruts as $rut) {
-            $this->assertTrue(RutHelper::validate($rut));
+            static::assertTrue(RutHelper::validate($rut));
         }
     }
 
     public function testDoesntValidates()
     {
         foreach ($this->invalidRuts as $rut) {
-            $this->assertFalse(RutHelper::validate($rut));
+            static::assertFalse(RutHelper::validate($rut));
         }
 
-        $this->assertFalse(RutHelper::validate('asdasdasd'));
+        static::assertFalse(RutHelper::validate('asdasdasd'));
 
     }
 
     public function testValidateOnMalformedRut()
     {
         foreach ($this->malformedRuts as $rut) {
-            $this->assertTrue(RutHelper::validate($rut));
+            static::assertTrue(RutHelper::validate($rut));
         }
     }
 
@@ -126,7 +126,7 @@ class RutHelperTest extends TestCase
         ];
 
         foreach ($malformed as $rut) {
-            $this->assertFalse(RutHelper::validate($rut));
+            static::assertFalse(RutHelper::validate($rut));
         }
     }
 
@@ -141,7 +141,7 @@ class RutHelperTest extends TestCase
             '14.379.170-K',
         ];
 
-        $this->assertFalse(RutHelper::validate($malformed));
+        static::assertFalse(RutHelper::validate($malformed));
     }
 
     public function testValidateStrict()
@@ -155,17 +155,17 @@ class RutHelperTest extends TestCase
             '14.379.170-K',
         ];
 
-        $this->assertTrue(RutHelper::validateStrict($ruts));
+        static::assertTrue(RutHelper::validateStrict($ruts));
 
         foreach ($ruts as $rut) {
-            $this->assertTrue(RutHelper::validateStrict($rut));
+            static::assertTrue(RutHelper::validateStrict($rut));
         }
     }
 
     public function testDoesntValidateStrict()
     {
         foreach ($this->ruts as $rut) {
-            $this->assertFalse(RutHelper::validateStrict($rut));
+            static::assertFalse(RutHelper::validateStrict($rut));
         }
     }
 
@@ -179,58 +179,58 @@ class RutHelperTest extends TestCase
             '14.379.170-K',
         ];
 
-        $this->assertFalse(RutHelper::validateStrict($ruts));
+        static::assertFalse(RutHelper::validateStrict($ruts));
 
         $ruts = [
             new Rut(8495461, '6'),
             new Rut(13666578, '6'),
         ];
 
-        $this->assertFalse(RutHelper::validateStrict($ruts));
+        static::assertFalse(RutHelper::validateStrict($ruts));
     }
 
     public function testAreTwoEqual()
     {
-        $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4'));
-        $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4', '24.700.909-4'));
+        static::assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4'));
+        static::assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4', '24.700.909-4'));
     }
 
     public function testAreTwoNotEqual()
     {
-        $this->assertFalse(RutHelper::isEqual(247009091, '2470!!!###0909-4'));
-        $this->assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4', '24.700.9094'));
+        static::assertFalse(RutHelper::isEqual(247009091, '2470!!!###0909-4'));
+        static::assertTrue(RutHelper::isEqual(247009094, '2470!!!###0909-4', '24.700.9094'));
     }
 
     public function testAreEqualWithSingleArray()
     {
-        $this->assertTrue(RutHelper::isEqual([
+        static::assertTrue(RutHelper::isEqual([
             247009094, '2470!!!###0909-4',
         ]));
 
-        $this->assertFalse(RutHelper::isEqual([
+        static::assertFalse(RutHelper::isEqual([
             247009091, '2470!!!###0909-4',
         ]));
     }
 
     public function testFilter()
     {
-        $this->assertEquals(['247009094'], RutHelper::filter(247009094));
-        $this->assertEquals(['247009094'], RutHelper::filter('247009094'));
+        static::assertEquals(['247009094'], RutHelper::filter(247009094));
+        static::assertEquals(['247009094'], RutHelper::filter('247009094'));
 
-        $this->assertEquals($this->ruts, RutHelper::filter($this->ruts));
+        static::assertEquals($this->ruts, RutHelper::filter($this->ruts));
 
         $malformedRuts = array_map(function ($rut) {
             return (string)$rut;
         }, $this->malformedRuts);
 
-        $this->assertEquals($malformedRuts, RutHelper::filter($this->malformedRuts));
+        static::assertEquals($malformedRuts, RutHelper::filter($this->malformedRuts));
     }
 
     public function testDoesntFilter()
     {
-        $this->assertEquals([], RutHelper::filter(247009091));
-        $this->assertEquals([], RutHelper::filter('247009091'));
-        $this->assertEquals([], RutHelper::filter($this->invalidRuts));
+        static::assertEquals([], RutHelper::filter(247009091));
+        static::assertEquals([], RutHelper::filter('247009091'));
+        static::assertEquals([], RutHelper::filter($this->invalidRuts));
     }
 
     public function testRectify()
@@ -243,11 +243,11 @@ class RutHelperTest extends TestCase
         $rutARectified = RutHelper::rectify($rutA);
         $rutBRectified = RutHelper::rectify($rutB);
 
-        $this->assertInstanceOf(Rut::class, $rutARectified);
-        $this->assertInstanceOf(Rut::class, $rutBRectified);
+        static::assertInstanceOf(Rut::class, $rutARectified);
+        static::assertInstanceOf(Rut::class, $rutBRectified);
 
-        $this->assertEquals((string)$rutA . $rutAVd, $rutARectified->toRawString());
-        $this->assertEquals(strtoupper($rutB . $rutBVd), $rutBRectified->toRawString());
+        static::assertEquals((string)$rutA . $rutAVd, $rutARectified->toRawString());
+        static::assertEquals(strtoupper($rutB . $rutBVd), $rutBRectified->toRawString());
     }
 
     public function testDoesntRectify()
@@ -259,20 +259,20 @@ class RutHelperTest extends TestCase
 
     public function testIsPerson()
     {
-        $this->assertTrue(RutHelper::isPerson(136665782));
-        $this->assertTrue(RutHelper::isPerson('22605071k'));
+        static::assertTrue(RutHelper::isPerson(136665782));
+        static::assertTrue(RutHelper::isPerson('22605071k'));
 
-        $this->assertFalse(RutHelper::isPerson(761231235));
-        $this->assertFalse(RutHelper::isPerson('66123136K'));
+        static::assertFalse(RutHelper::isPerson(761231235));
+        static::assertFalse(RutHelper::isPerson('66123136K'));
     }
 
     public function testIsCompany()
     {
-        $this->assertFalse(RutHelper::isCompany(136665782));
-        $this->assertFalse(RutHelper::isCompany('22605071k'));
+        static::assertFalse(RutHelper::isCompany(136665782));
+        static::assertFalse(RutHelper::isCompany('22605071k'));
 
-        $this->assertTrue(RutHelper::isCompany(761231235));
-        $this->assertTrue(RutHelper::isCompany('66123136K'));
+        static::assertTrue(RutHelper::isCompany(761231235));
+        static::assertTrue(RutHelper::isCompany('66123136K'));
     }
 
     public function testGetVd()
@@ -285,7 +285,7 @@ class RutHelperTest extends TestCase
         ];
 
         foreach ($ruts as $key => $rut) {
-            $this->assertEquals($key, RutHelper::getVd($rut));
+            static::assertEquals($key, RutHelper::getVd($rut));
         }
 
     }

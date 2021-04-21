@@ -2,6 +2,8 @@
 
 namespace DarkGhostHunter\RutUtils;
 
+use Throwable;
+
 class RutHelper
 {
     /**
@@ -9,9 +11,9 @@ class RutHelper
      *
      * @param  string $rut
      * @param  bool $uppercase
-     * @return string
+     * @return string|null
      */
-    public static function cleanRut(string $rut, bool $uppercase = true)
+    public static function cleanRut(string $rut, bool $uppercase = true): ?string
     {
         // Filter the RUT string and return only numbers and verification digit.
         $filtered = preg_filter('/(?!\d|k)./i', '', $rut) ?? $rut;
@@ -31,7 +33,7 @@ class RutHelper
      * @param  bool $uppercase
      * @return array
      */
-    public static function separateRut(string $rut, bool $uppercase = true)
+    public static function separateRut(string $rut, bool $uppercase = true): array
     {
         if (empty($cleaned = static::cleanRut($rut, $uppercase))) {
             return [null, null];
@@ -50,7 +52,7 @@ class RutHelper
      * @param  string $string
      * @return array
      */
-    protected static function explodeByLastChar(string $string)
+    protected static function explodeByLastChar(string $string): array
     {
         return str_split($string, strlen($string) - 1);
     }
@@ -61,7 +63,7 @@ class RutHelper
      * @param  array $ruts
      * @return bool
      */
-    public static function validate(...$ruts)
+    public static function validate(...$ruts): bool
     {
         // Unpack the ruts and do a loop. Each of these will be pass validation
         try {
@@ -71,7 +73,7 @@ class RutHelper
                 }
             }
         }
-        catch (\Throwable $throwable) {
+        catch (Throwable $throwable) {
             return false;
         }
 
@@ -84,7 +86,7 @@ class RutHelper
      * @param  mixed ...$ruts
      * @return bool
      */
-    public static function validateStrict(...$ruts)
+    public static function validateStrict(...$ruts): bool
     {
         try {
             foreach (static::unpack($ruts) as $rut) {
@@ -94,7 +96,7 @@ class RutHelper
                 }
             }
         }
-        catch (\Throwable $throwable) {
+        catch (Throwable $throwable) {
             return false;
         }
 
@@ -108,7 +110,7 @@ class RutHelper
      * @param  null|string $vd
      * @return bool
      */
-    protected static function validateRut($rut, $vd = null)
+    protected static function validateRut($rut, $vd = null): bool
     {
         [$num, $vd] = $vd ? [$rut, $vd] : static::separateRut($rut);
 
@@ -121,7 +123,7 @@ class RutHelper
      * @param  mixed ...$ruts
      * @return array
      */
-    public static function filter(...$ruts)
+    public static function filter(...$ruts): array
     {
         return array_filter(static::unpack($ruts), function ($rut) {
             [$num, $vd] = is_array($rut) ? $rut : [$rut, null];
@@ -136,7 +138,7 @@ class RutHelper
      * @param  int $num
      * @return Rut
      */
-    public static function rectify(int $num)
+    public static function rectify(int $num): Rut
     {
         return new Rut($num, static::getVd($num));
     }
@@ -148,7 +150,7 @@ class RutHelper
      * @param  null $vd
      * @return bool
      */
-    public static function isPerson(string $rut, $vd = null)
+    public static function isPerson(string $rut, $vd = null): bool
     {
         [$num] = $vd ? [$rut, $vd] : static::separateRut($rut);
 
@@ -162,7 +164,7 @@ class RutHelper
      * @param  null $vd
      * @return bool
      */
-    public static function isCompany(string $rut, $vd = null)
+    public static function isCompany(string $rut, $vd = null): bool
     {
         return ! static::isPerson($rut, $vd);
     }
@@ -173,7 +175,7 @@ class RutHelper
      * @param  array $ruts
      * @return bool
      */
-    public static function isEqual(...$ruts)
+    public static function isEqual(...$ruts): bool
     {
         $ruts = static::unpack($ruts);
 
@@ -193,10 +195,11 @@ class RutHelper
     /**
      * Unpacks an array of RUTs if it's a single multidimensional array
      *
-     * @param $ruts
-     * @return array|mixed
+     * @param  array  $ruts
+     *
+     * @return array
      */
-    public static function unpack(array $ruts)
+    public static function unpack(array $ruts): array
     {
         // If the array contains only one entry, and that entry is an array: unpack.
         if (count($ruts) === 1 && is_array($ruts[0])) {

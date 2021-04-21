@@ -9,21 +9,21 @@ trait HasCase
      *
      * @var bool
      */
-    protected static $globalUppercase = true;
+    protected static bool $globalUppercase = true;
 
     /**
      * If `K` should be treated as uppercase.
      *
      * @var bool|null
      */
-    protected $uppercase;
+    protected ?bool $uppercase;
 
     /**
      * Return the global string format
      *
-     * @return string
+     * @return bool
      */
-    public static function getGlobalUppercase()
+    public static function getGlobalUppercase(): bool
     {
         return self::$globalUppercase;
     }
@@ -33,7 +33,7 @@ trait HasCase
      *
      * @return void
      */
-    public static function allUppercase()
+    public static function allUppercase(): void
     {
         self::$globalUppercase = true;
     }
@@ -43,7 +43,7 @@ trait HasCase
      *
      * @return void
      */
-    public static function allLowercase()
+    public static function allLowercase(): void
     {
         self::$globalUppercase = false;
     }
@@ -53,9 +53,9 @@ trait HasCase
      *
      * @return bool
      */
-    protected function shouldUppercase()
+    protected function shouldUppercase(): bool
     {
-        return $this->uppercase !== null ? $this->uppercase : self::$globalUppercase;
+        return $this->uppercase ?? self::$globalUppercase;
     }
 
     /**
@@ -64,7 +64,7 @@ trait HasCase
      * @param  string $vd
      * @return string
      */
-    protected function case(string $vd)
+    protected function case(string $vd): string
     {
         return $this->shouldUppercase() ? strtoupper($vd) : strtolower($vd);
     }
@@ -72,9 +72,9 @@ trait HasCase
     /**
      * Set all RUT to use lowercase `K`
      *
-     * @return \DarkGhostHunter\RutUtils\Rut
+     * @return static
      */
-    public function lowercase()
+    public function lowercase(): Rut
     {
         $this->uppercase = false;
 
@@ -84,9 +84,9 @@ trait HasCase
     /**
      * Set all RUT to use uppercase `K`
      *
-     * @return \DarkGhostHunter\RutUtils\Rut
+     * @return static
      */
-    public function uppercase()
+    public function uppercase(): Rut
     {
         $this->uppercase = true;
 

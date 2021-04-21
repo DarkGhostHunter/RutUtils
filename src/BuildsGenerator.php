@@ -9,28 +9,28 @@ trait BuildsGenerator
      *
      * @var bool
      */
-    protected $unique = false;
+    protected bool $unique = false;
 
     /**
      * Window of RUT randomness
      *
      * @var bool
      */
-    protected $person = true;
+    protected bool $person = true;
 
     /**
      * What type to output
      *
      * @var string
      */
-    protected $output = 'object';
+    protected string $output = 'object';
 
     /**
      * Generate unique RUTs
      *
-     * @return $this
+     * @return static
      */
-    public function withoutDuplicates()
+    public function withoutDuplicates(): RutGenerator
     {
         $this->unique = true;
 
@@ -40,9 +40,9 @@ trait BuildsGenerator
     /**
      * Generate RUTs that may be duplicated
      *
-     * @return $this
+     * @return static
      */
-    public function withDuplicates()
+    public function withDuplicates(): RutGenerator
     {
         $this->unique = false;
 
@@ -52,9 +52,9 @@ trait BuildsGenerator
     /**
      * Return companies RUTs
      *
-     * @return $this
+     * @return static
      */
-    public function asCompany()
+    public function asCompany(): RutGenerator
     {
         $this->person = false;
 
@@ -64,9 +64,9 @@ trait BuildsGenerator
     /**
      * Return Persons RUTs
      *
-     * @return $this
+     * @return static
      */
-    public function asPerson()
+    public function asPerson(): RutGenerator
     {
         $this->person = true;
 
@@ -76,10 +76,10 @@ trait BuildsGenerator
     /**
      * Return RUTs as strict strings
      *
+     * @return static
      * @example '22.605.071-K'
-     * @return $this
      */
-    public function asStrict()
+    public function asStrict(): RutGenerator
     {
         $this->output = Rut::FORMAT_STRICT;
 
@@ -89,10 +89,10 @@ trait BuildsGenerator
     /**
      * Return RUTs as basic strings
      *
+     * @return static
      * @example '22605071-K'
-     * @return $this
      */
-    public function asBasic()
+    public function asBasic(): RutGenerator
     {
         $this->output = Rut::FORMAT_BASIC;
 
@@ -102,10 +102,10 @@ trait BuildsGenerator
     /**
      * Return RUTs as raw strings
      *
+     * @return static
      * @example '22605071K'
-     * @return $this
      */
-    public function asRaw()
+    public function asRaw(): RutGenerator
     {
         $this->output = Rut::FORMAT_RAW;
 
@@ -115,9 +115,9 @@ trait BuildsGenerator
     /**
      * Return RUTs as Rut object instances
      *
-     * @return $this
+     * @return static
      */
-    public function asObject()
+    public function asObject(): RutGenerator
     {
         $this->output = 'object';
 

@@ -3,9 +3,9 @@
 namespace DarkGhostHunter\RutUtils;
 
 use ArrayAccess;
-use Serializable;
-use JsonSerializable;
 use DarkGhostHunter\RutUtils\Exceptions\InvalidRutException;
+use JsonSerializable;
+use Serializable;
 
 /**
  * Class Rut
@@ -42,7 +42,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      *
      * @var array
      */
-    protected $rut;
+    protected array $rut;
 
     /**
      * Creates a new Rut instance.
@@ -63,7 +63,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      *
      * @return \DarkGhostHunter\RutUtils\Rut
      */
-    public function clone()
+    public function clone(): Rut
     {
         return clone $this;
     }
@@ -73,7 +73,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      *
      * @return array
      */
-    public function getRut()
+    public function getRut(): array
     {
         return $this->rut;
     }
@@ -84,7 +84,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      * @param  mixed $rut
      * @param  null|int|string|callable $vd
      * @param  null|callable|mixed $default
-     * @return null|mixed|\DarkGhostHunter\RutUtils\Rut
+     * @return null|\DarkGhostHunter\RutUtils\Rut
      */
     public static function make($rut, $vd = null, $default = null)
     {
@@ -124,10 +124,10 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      * @return \DarkGhostHunter\RutUtils\Rut
      * @throws \DarkGhostHunter\RutUtils\Exceptions\InvalidRutException
      */
-    public static function makeOrThrow($rut, $vd = null)
+    public static function makeOrThrow($rut, $vd = null): Rut
     {
-        if ($rut = self::make($rut, $vd)) {
-            return $rut;
+        if ($instance = self::make($rut, $vd)) {
+            return $instance;
         }
 
         throw new InvalidRutException($rut);
@@ -233,7 +233,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      * @param $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return $this->__isset($offset);
     }
@@ -274,10 +274,11 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      * Returns the RUT as a JSON string
      *
      * @return false|string
+     * @throws \JsonException
      */
     public function toJson()
     {
-        return json_encode($this->jsonSerialize());
+        return json_encode($this->jsonSerialize(), JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -293,9 +294,9 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
     /**
      * Return an array representation of the Rut instance
      *
-     * @return array|string
+     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->rut;
     }
@@ -305,7 +306,7 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
      *
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return $this->toRawString();
     }
@@ -313,17 +314,15 @@ class Rut implements ArrayAccess, JsonSerializable, Serializable
     /**
      * Constructs the object
      *
-     * @param  string $serialized
+     * @param  string $data
+     *
      * @return void
      * @since 5.1.0
      */
-    public function unserialize($serialized)
+    public function unserialize($data): void
     {
-        [$num, $vd] = str_split($serialized, strlen($serialized) - 1);
+        [$num, $vd] = str_split($data, strlen($data) - 1);
 
-        $this->rut = [
-            'num' => (int)$num,
-            'vd'  => $vd,
-        ];
+        $this->rut = ['num' => (int)$num, 'vd'  => $vd];
     }
 }
