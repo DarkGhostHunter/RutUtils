@@ -1,15 +1,15 @@
 <?php
 
-namespace Test;
+namespace Tests;
 
-use PHPUnit\Framework\TestCase;
 use DarkGhostHunter\RutUtils\Rut;
+use PHPUnit\Framework\TestCase;
 
 class RutCallbacksTest extends TestCase
 {
     public function testDefaultNoCallbacks()
     {
-        $this->assertEmpty(Rut::getAfterCallbacks());
+        static::assertEmpty(Rut::getAfterCallbacks());
     }
 
     public function testAddsCallback()
@@ -27,7 +27,7 @@ class RutCallbacksTest extends TestCase
         Rut::after($bar);
         Rut::after($qux);
 
-        $this->assertEquals($callbacks, Rut::getAfterCallbacks());
+        static::assertEquals($callbacks, Rut::getAfterCallbacks());
     }
 
     public function testRegisterAndExecutesCallback()
@@ -41,8 +41,8 @@ class RutCallbacksTest extends TestCase
 
         Rut::after($foo);
 
-        $this->assertEquals(3, Rut::many('18300252K', '18300252K'));
-        $this->assertEquals(['foo'], $order);
+        static::assertEquals(3, Rut::many('18300252K', '18300252K'));
+        static::assertEquals(['foo'], $order);
     }
 
     public function testRegisterAndExecutesCallbacksInOrder()
@@ -68,13 +68,13 @@ class RutCallbacksTest extends TestCase
         Rut::after($bar);
         Rut::after($qux);
 
-        $this->assertEquals(15, Rut::many('18300252K', '18300252K'));
-        $this->assertEquals(['foo', 'bar', 'qux'], $order);
+        static::assertEquals(15, Rut::many('18300252K', '18300252K'));
+        static::assertEquals(['foo', 'bar', 'qux'], $order);
 
         $order = [];
 
-        $this->assertEquals(15, Rut::manyOrThrow('18300252K', '18300252K'));
-        $this->assertEquals(['foo', 'bar', 'qux'], $order);
+        static::assertEquals(15, Rut::manyOrThrow('18300252K', '18300252K'));
+        static::assertEquals(['foo', 'bar', 'qux'], $order);
     }
 
     public function testFlushesCallbacks()
@@ -92,12 +92,12 @@ class RutCallbacksTest extends TestCase
         Rut::after($bar);
         Rut::after($qux);
 
-        $this->assertEquals($callbacks, Rut::getAfterCallbacks());
+        static::assertEquals($callbacks, Rut::getAfterCallbacks());
 
         Rut::flushAfterCallbacks();
 
-        $this->assertEmpty(Rut::getAfterCallbacks());
-        $this->assertIsArray(Rut::many('18300252K'));
+        static::assertEmpty(Rut::getAfterCallbacks());
+        static::assertIsArray(Rut::many('18300252K'));
     }
 
     public function testCallsWithoutCallbacks()
@@ -110,15 +110,15 @@ class RutCallbacksTest extends TestCase
             return Rut::many('18300252K', '18300252K');
         });
 
-        $this->assertIsArray($expected);
-        $this->assertCount(2, $expected);
+        static::assertIsArray($expected);
+        static::assertCount(2, $expected);
 
         $expected = Rut::withoutCallbacks(function () {
             return Rut::manyOrThrow('18300252K', '18300252K');
         });
 
-        $this->assertIsArray($expected);
-        $this->assertCount(2, $expected);
+        static::assertIsArray($expected);
+        static::assertCount(2, $expected);
     }
 
     public function tearDown(): void

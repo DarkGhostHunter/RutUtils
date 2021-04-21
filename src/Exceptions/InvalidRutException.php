@@ -13,6 +13,6 @@ class InvalidRutException extends Exception
      */
     public function __construct($rut = null)
     {
-        parent::__construct(empty($rut) ? "The given RUT [$rut] is invalid" : 'The given RUT is invalid');
+        parent::__construct(is_string($rut) ? "The given RUT [$rut] is invalid" : 'The given RUT is invalid');
     }
 }
