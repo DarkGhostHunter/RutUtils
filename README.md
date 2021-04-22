@@ -1,7 +1,7 @@
 ![Pablo García Saldaña - Unsplash (UL) #Y-MGVIkpyFw](https://images.unsplash.com/photo-1441484295955-db07de1fdbad?ixlib=rb-1.2.1&auto=format&fit=crop&w=1280&h=400&q=80)
 
 [![Latest Stable Version](https://poser.pugx.org/darkghosthunter/rut-utils/v/stable)](https://packagist.org/packages/darkghosthunter/rut-utils) [![License](https://poser.pugx.org/darkghosthunter/rut-utils/license)](https://packagist.org/packages/darkghosthunter/rut-utils)
-![](https://img.shields.io/packagist/php-v/darkghosthunter/rut-utils.svg) [![Build Status](https://travis-ci.com/DarkGhostHunter/RutUtils.svg?branch=master)](https://travis-ci.com/DarkGhostHunter/RutUtils) [![Coverage Status](https://coveralls.io/repos/github/DarkGhostHunter/RutUtils/badge.svg?branch=master)](https://coveralls.io/github/DarkGhostHunter/RutUtils?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/7142cecb93e555cd7028/maintainability)](https://codeclimate.com/github/DarkGhostHunter/RutUtils/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/7142cecb93e555cd7028/test_coverage)](https://codeclimate.com/github/DarkGhostHunter/RutUtils/test_coverage)
+![](https://img.shields.io/packagist/php-v/darkghosthunter/rut-utils.svg) [![Coverage Status](https://coveralls.io/repos/github/DarkGhostHunter/RutUtils/badge.svg?branch=master)](https://coveralls.io/github/DarkGhostHunter/RutUtils?branch=master) [![Maintainability](https://api.codeclimate.com/v1/badges/7142cecb93e555cd7028/maintainability)](https://codeclimate.com/github/DarkGhostHunter/RutUtils/maintainability)
 
 # RUT Utilities
  
